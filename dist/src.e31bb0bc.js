@@ -14227,13 +14227,15 @@ class DogsView {
 
     _Utils.default.pageIntroAnim();
 
-    await this.getDogs(); //this.filterDogs('age', '1-3')
+    const filterSelects = document.querySelectorAll("sl-select");
+    filterSelects.forEach(select => select.addEventListener('sl-change', event => {
+      this.filterDogs();
+    }));
+    await this.getDogs();
   }
 
-  async filterDogs(field, match) {
-    // Validate
-    if (!field || !match) return; // get fresh copy of dogs
-
+  async filterDogs() {
+    // get fresh copy of dogs
     this.dogs = await _DogAPI.default.getDogs();
     const breed = document.getElementById('breed').value;
     const sex = document.getElementById('sex').value;
@@ -14241,16 +14243,9 @@ class DogsView {
     const age = document.getElementById('age').value;
     const nature = document.getElementById('nature').value;
     const energy = document.getElementById('energy').value;
-    console.log(breed);
-    console.log(sex);
-    console.log(size);
-    console.log(age);
-    console.log(nature);
-    console.log(energy);
     let filteredDogs = this.dogs; // sex
 
     if (sex) {
-      console.log("hello");
       filteredDogs = filteredDogs.filter(dog => dog.sex == sex);
     } // breed
 
@@ -14262,9 +14257,14 @@ class DogsView {
 
     if (age) {
       // age ranges
-      const ageRangeStart = age.split('-')[0];
-      const ageRangeEnd = age.split('-')[1];
-      filteredDogs = filteredDogs.filter(dog => dog.age >= ageRangeStart && dog.age <= ageRangeEnd);
+      if (age != '16+') {
+        const ageRangeStart = age.split('-')[0];
+        const ageRangeEnd = age.split('-')[1];
+        filteredDogs = filteredDogs.filter(dog => dog.age >= ageRangeStart && dog.age <= ageRangeEnd);
+      } else {
+        const ageRangeStart = age.split('+')[0];
+        filteredDogs = filteredDogs.filter(dog => dog.age >= ageRangeStart);
+      }
     }
 
     if (size) {
@@ -14286,20 +14286,8 @@ class DogsView {
 
   clearFilterButtons() {
     // reset buttons
-    const filterBtns = document.querySelectorAll(".filter-btn");
-    filterBtns.forEach(btn => btn.removeAttribute("type"));
-  }
-
-  handleFilterButton(e) {
-    // reset buttons
-    this.clearFilterButtons(); // set button active
-
-    e.target.setAttribute("type", "primary"); // extract field and match
-
-    const field = e.target.getAttribute("data-field");
-    const match = e.target.getAttribute("data-match"); // filter dogs
-
-    this.filterDogs(field, match);
+    const filterSelects = document.querySelectorAll("sl-select");
+    filterSelects.forEach(select => select.value = '');
   }
 
   clearFilters() {
@@ -14318,7 +14306,7 @@ class DogsView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .filter-menu {\n        dislay: flex;\n        align: center;\n      }\n\n      .filter-menu > div {\n        margin-right: 1em;\n      }\n\n      .dog-select {\n        width: 10%;\n        float: left;\n      }\n    </style>\n      <va-app-header title=\"Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">  \n    <div class=\"filter-menu\">\n      <div>Filter by</div>\n      <div>\n        <sl-select class=\"dog-select\" id=\"breed\" placeholder=\"Breed\" clearable>\n          <sl-menu-item data-field=\"breed\" data-match=\"border collie\" value=\"border collie\" @click=", ">border collie</sl-menu-item>\n          <sl-menu-item data-field=\"breed\" data-match=\"Dashhound\" value=\"Dashhound\" @click=", ">dashhound</sl-menu-item>\n          <sl-menu-item data-field=\"breed\" data-match=\"great dane\" value=\"great dane\" @click=", ">great dane</sl-menu-item>\n        </sl-select>\n          <sl-select class=\"dog-select\" id=\"sex\" placeholder=\"Sex\" clearable>\n          <sl-menu-item data-field=\"sex\" data-match=\"male\" value=\"male\" @click=", ">male</sl-menu-item>\n          <sl-menu-item data-field=\"sex\" data-match=\"female\" value=\"female\" @click=", ">female</sl-menu-item>\n        </sl-select>\n        </sl-select>\n        <sl-select class=\"dog-select\" id=\"age\" placeholder=\"Age\" clearable>\n          <sl-menu-item data-field=\"age\" data-match=\"0-5\" value=\"0-5\" @click=", ">0-5</sl-menu-item>\n          <sl-menu-item data-field=\"age\" data-match=\"6-10\" value=\"6-10\" @click=", ">6-10</sl-menu-item>\n          <sl-menu-item data-field=\"age\" data-match=\"11-15\" value=\"11-15\" @click=", ">11-15</sl-menu-item>\n          <sl-menu-item data-field=\"age\" data-match=\"6-10\" value=\"16-20\" @click=", ">16-20</sl-menu-item>\n        </sl-select>\n        <sl-select class=\"dog-select\" id=\"size\" placeholder=\"Size\" clearable>\n          <sl-menu-item data-field=\"size\" data-match=\"small\" value=\"small\" @click=", ">small</sl-menu-item>\n          <sl-menu-item data-field=\"size\" data-match=\"medium\" value=\"medium\" @click=", ">medium</sl-menu-item>\n          <sl-menu-item data-field=\"size\" data-match=\"large\" value=\"large\" @click=", ">large</sl-menu-item>\n        </sl-select>\n          <sl-select class=\"dog-select\" id=\"nature\" placeholder=\"Nature\" clearable>\n          <sl-menu-item data-field=\"nature\" data-match=\"loving\" value=\"loving\" @click=", ">loving</sl-menu-item>\n          <sl-menu-item data-field=\"nature\" data-match=\"playful\" value=\"playful\" @click=", ">playful</sl-menu-item>\n          <sl-menu-item data-field=\"nature\" data-match=\"protective\" value=\"protective\" @click=", ">protective</sl-menu-item>\n        </sl-select>\n          <sl-select class=\"dog-select\" id=\"energy\" placeholder=\"Energy\" clearable>\n          <sl-menu-item data-field=\"energy\" data-match=\"low\" value=\"low\" @click=", ">low</sl-menu-item>\n          <sl-menu-item data-field=\"energy\" data-match=\"medium\" value=\"medium\" @click=", ">medium</sl-menu-item>\n          <sl-menu-item data-field=\"energy\" data-match=\"high\" value=\"high\" @click=", ">high</sl-menu-item>\n        </sl-select>\n        <sl-button size=\"medium\" @click=", ">Clear Filters</sl-button>\n      </div>\n    </div>\n    <div class=\"dogs-grid\">\n    ", "\n    </div>\n        \n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.handleFilterButton.bind(this), this.clearFilters.bind(this), this.dogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>\n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n      ", "\n    "])), this.dogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-dog class=\"dog-card\" \n          id=\"", "\"\n          name=\"", "\" \n          breed=\"", "\"\n          owner=\"", "\"\n          size=\"", "\"\n          age=\"", "\"\n          nature=\"", "\"\n          Energy=\"", "\"\n          image=\"", "\"\n        >\n        </va-dog>\n      "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .filter-menu {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center\n      }\n      .dog-select {\n        width: 13%;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }\n      .reset-button {\n        float: right;\n        margin-left: 30px;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }\n    </style>\n      <va-app-header title=\"Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">  \n    <div class=\"filter-menu\">\n      <sl-select class=\"dog-select\" id=\"breed\" placeholder=\"Breed\" clearable>\n        <sl-menu-item data-field=\"breed\" data-match=\"border collie\" value=\"border collie\">border collie</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"Dashhound\" value=\"Dashhound\">dashhound</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"great dane\" value=\"great dane\">great dane</sl-menu-item>\n      </sl-select>\n        <sl-select class=\"dog-select\" id=\"sex\" placeholder=\"Sex\" clearable>\n        <sl-menu-item data-field=\"sex\" data-match=\"male\" value=\"male\">male</sl-menu-item>\n        <sl-menu-item data-field=\"sex\" data-match=\"female\" value=\"female\">female</sl-menu-item>\n      </sl-select>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"age\" placeholder=\"Age\" clearable>\n        <sl-menu-item data-field=\"age\" data-match=\"0-5\" value=\"0-5\">0-5</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"6-10\" value=\"6-10\">6-10</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"11-15\" value=\"11-15\">11-15</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"16+\" value=\"16+\">16+</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"size\" placeholder=\"Size\" clearable>\n        <sl-menu-item data-field=\"size\" data-match=\"small\" value=\"small\">small</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"large\" value=\"large\">large</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"nature\" placeholder=\"Nature\" clearable>\n        <sl-menu-item data-field=\"nature\" data-match=\"loving\" value=\"loving\">loving</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"playful\" value=\"playful\">playful</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"protective\" value=\"protective\">protective</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"energy\" placeholder=\"Energy\" clearable>\n        <sl-menu-item data-field=\"energy\" data-match=\"low\" value=\"low\">low</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"high\" value=\"high\">high</sl-menu-item>\n      </sl-select>\n      <sl-button class=\"reset-button\" size=\"medium\" @click=", ">Clear Filters</sl-button>\n    </div>\n    <div class=\"dogs-grid\">\n    ", "\n    </div>\n        \n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.clearFilters.bind(this), this.dogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>\n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n      ", "\n    "])), this.dogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-dog class=\"dog-card\" \n          id=\"", "\"\n          name=\"", "\" \n          breed=\"", "\"\n          owner=\"", "\"\n          size=\"", "\"\n          age=\"", "\"\n          nature=\"", "\"\n          Energy=\"", "\"\n          image=\"", "\"\n        >\n        </va-dog>\n      "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14361,6 +14349,28 @@ class newDogView {
     this.render();
 
     _Utils.default.pageIntroAnim();
+
+    const fileTag = document.getElementById("file-upload");
+    fileTag.addEventListener("change", event => {
+      this.changeImage();
+    });
+  }
+
+  changeImage() {
+    var reader;
+    const input = document.getElementById("file-upload");
+    const preview = document.getElementById("image-preview");
+
+    if (input.files && input.files[0]) {
+      reader = new FileReader();
+
+      reader.onload = function (e) {
+        console.log(preview);
+        preview.setAttribute('src', e.target.result);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
   }
 
   async newDogSubmitHandler(e) {
@@ -14395,6 +14405,13 @@ class newDogView {
 
       if (fileInput) {
         fileInput.value = null;
+      } // reset select inputs
+
+
+      const selectInputs = document.querySelectorAll('sl-select');
+
+      if (selectInputs) {
+        selectInputs.forEach(select => select.value = '');
       }
     } catch (err) {
       _Toast.default.show(err, 'error');
@@ -14404,7 +14421,7 @@ class newDogView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"New Dog\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">    \n      <h1>New Dog</h1>    \n        <sl-form class=\"form-signup\" @sl-submit=", ">\n        <input type=\"hidden\" name=\"user\" value=\"", "\" />\n        <div class=\"input-group\">\n          <sl-input name=\"name\" type=\"text\" placeholder=\"Dog Name\" required></sl-input>\n        </div>\n        <div class=\"input-group\">              \n          <sl-input name=\"breed\" type=\"text\" placeholder=\"Breed\" required>\n          </sl-input>\n        </div>\n        <div class=\"input-group\">\n        <sl-textarea name=\"description\" rows=\"3\" placeholder=\"Description\"></sl-textarea>\n        </div>\n        <div class=\"input-group\">\n          <sl-input name=\"age\" placeholder=\"Age\"></sl-input>\n        </div>\n        <div class=\"input-group\">\n          <sl-input name=\"nature\" placeholder=\"Nature\"></sl-input>\n        </div>\n        <div class=\"input-group\">\n          <sl-input name=\"energy\" placeholder=\"Energy\"></sl-input>\n        </div>\n        <div class=\"input-group\" style=\"margin-bottom: 2em;\">\n          <label>Image</label><br>\n          <input type=\"file\" name=\"image\"/>              \n        </div>\n        <div class=\"input-group\" style=\"margin-bottom: 2em;\">\n          <label>Size</label><br>\n          <sl-radio-group label=\"Select size\" no-fieldset>\n            <sl-radio name=\"size\" value=\"small\">Small</sl-radio>\n            <sl-radio name=\"size\" value=\"medium\">Medium</sl-radio>\n            <sl-radio name=\"size\" value=\"large\">Large</sl-radio>\n          </sl-radio-group>\n        </div>\n        <div class=\"input-group\" style=\"margin-bottom: 2em;\">\n          <label>Sex</label><br>\n          <sl-radio-group label=\"Select sex\" no-fieldset>\n            <sl-radio name=\"sex\" value=\"male\">Male</sl-radio>\n            <sl-radio name=\"sex\" value=\"female\">Female</sl-radio>\n          </sl-radio-group>\n        </div>\n        <sl-button type=\"primary\" class=\"submit-btn\" submit>Add Dog</sl-button>\n      </sl-form>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.newDogSubmitHandler, _Auth.default.currentUser._id);
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .new-dog-menu {\n          display: flex;\n          flex-wrap: wrap;\n        }\n        .left-panel {\n          padding: 20px;\n          width: 40%;\n          height: 100%;\n        }\n        .right-panel {\n          padding: 20px;\n          width: 60%;\n          height: 100%;\n        }\n        #image-preview {\n          width: 100%;\n          height: 400px;\n          background-image: url('./../../images/Upload-tile.png');\n          background-size: 100% 100%;\n          background-repeat: no-repeat;\n        }\n        .new-dog-input {\n          margin-bottom: 40px;\n        }\n        input[type=\"file\"] {\n          display: none;\n        }\n        .image-upload {\n          margin-bottom: 10px !important;\n        }\n        .custom-file-upload {\n          width: 200px;\n          height: 40px;\n          background-color: var(--brand-color);\n          border: 1px solid #ccc;\n          display: inline-block;\n          padding: 9px 9px;\n          cursor: pointer;\n          border-radius: 4px;\n          color: #ffffff;\n          font-weight: 500;\n          text-align: center;\n        }\n        .dog-submit {\n          float: right;\n          width: 200px;\n        }\n        @media only screen and (max-width: 800px) {\n          .left-panel {\n            width: 100%;\n          }\n          .right-panel {\n            width: 100%;\n          }\n        }\n      </style>\n      <va-app-header title=\"New Dog\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">    \n      <h1>New Dog</h1>    \n        <sl-form class=\"form-signup\" @sl-submit=", ">\n        <input type=\"hidden\" name=\"user\" value=\"", "\" />\n        <div class=\"new-dog-menu\">\n          <div class=\"left-panel\">\n          <img id=\"image-preview\"></img>\n            <div id=\"input-group\" class=\"image-upload\" style=\"margin-bottom: 2em;\">\n              <label class=\"custom-file-upload\">Upload Image\n                <input class=\"upload-button\" id=\"file-upload\" type=\"file\" name=\"image\"/>       \n              </label>       \n            </div>\n            <div class=\"input-group new-dog-input\">\n            <sl-textarea name=\"description\" rows=\"6\" placeholder=\"Description\"></sl-textarea>\n            </div>\n          </div>\n          <div class=\"right-panel\">\n            <div class=\"input-group new-dog-input\">\n              <sl-input name=\"name\" type=\"text\" placeholder=\"Dog Name\" required></sl-input>\n            </div>\n            <div class=\"input-group new-dog-input\">              \n              <sl-select name=\"breed\" placeholder=\"Breed\" required>\n                <sl-menu-item value=\"border collie\">border collie</sl-menu-item>\n                <sl-menu-item value=\"Dashhound\">dashhound</sl-menu-item>\n                <sl-menu-item value=\"great dane\">great dane</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n              <sl-input name=\"age\" placeholder=\"Age\" required></sl-input>\n            </div>\n            <div class=\"input-group new-dog-input\">\n              <sl-select name=\"nature\" placeholder=\"Nature\" required>\n                <sl-menu-item value=\"loving\">loving</sl-menu-item>\n                <sl-menu-item value=\"playful\">playful</sl-menu-item>\n                <sl-menu-item value=\"protective\">protective</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n              <sl-select name=\"energy\" placeholder=\"Energy\" required>\n                <sl-menu-item value=\"low\" >low</sl-menu-item>\n                <sl-menu-item value=\"medium\">medium</sl-menu-item>\n                <sl-menu-item value=\"high\">high</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n              <sl-select name=\"size\" placeholder=\"Size\" required>\n                <sl-menu-item value=\"small\">small</sl-menu-item>\n                <sl-menu-item value=\"medium\">medium</sl-menu-item>\n                <sl-menu-item value=\"large\">large</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n              <sl-select name=\"sex\" placeholder=\"Sex\" required>\n                <sl-menu-item value=\"male\">male</sl-menu-item>\n                <sl-menu-item value=\"female\">female</sl-menu-item>\n              </sl-select>\n            </div>\n            <sl-button type=\"primary\" class=\"submit-btn dog-submit\" submit>Add Dog</sl-button>\n          </div>\n        </div>\n      </sl-form>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.newDogSubmitHandler, _Auth.default.currentUser._id);
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14473,7 +14490,69 @@ class FavouriteDogsView {
 var _default = new FavouriteDogsView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../Toast":"Toast.js","./../../UserAPI":"UserAPI.js"}],"Router.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../Toast":"Toast.js","./../../UserAPI":"UserAPI.js"}],"views/pages/myDogs.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("../../App"));
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../../Router");
+
+var _Auth = _interopRequireDefault(require("../../Auth"));
+
+var _Utils = _interopRequireDefault(require("../../Utils"));
+
+var _DogAPI = _interopRequireDefault(require("./../../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _UserAPI = _interopRequireDefault(require("./../../UserAPI"));
+
+var _templateObject, _templateObject2, _templateObject3, _templateObject4;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+class myDogsView {
+  async init() {
+    document.title = 'My Dogs';
+    this.myDogs = null;
+    this.render();
+
+    _Utils.default.pageIntroAnim();
+
+    await this.getMyDogs();
+  }
+
+  async getMyDogs() {
+    try {
+      const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
+      this.myDogs = await _DogAPI.default.getDogs();
+      this.myDogs = this.myDogs.filter(dog => dog.owner == currentUser._id);
+      this.render();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  render() {
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"My Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">        \n        <div class=\"dogs-grid\">\n        ", "\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myDogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          ", "\n        "])), this.myDogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n            <va-myDog class=\"dog-card\" \n              id=\"", "\"\n              name=\"", "\" \n              breed=\"", "\"\n              owner=\"", "\"\n              size=\"", "\"\n              age=\"", "\"\n              nature=\"", "\"\n              Energy=\"", "\"\n              image=\"", "\"\n            >\n            </va-myDog>\n          "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
+    (0, _litHtml.render)(template, _App.default.rootEl);
+  }
+
+}
+
+var _default = new myDogsView();
+
+exports.default = _default;
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../DogAPI":"DogAPI.js","../../Toast":"Toast.js","./../../UserAPI":"UserAPI.js"}],"Router.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14503,6 +14582,8 @@ var _newDog = _interopRequireDefault(require("./views/pages/newDog"));
 
 var _favouriteDogs = _interopRequireDefault(require("./views/pages/favouriteDogs"));
 
+var _myDogs = _interopRequireDefault(require("./views/pages/myDogs"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import views
@@ -14517,7 +14598,8 @@ const routes = {
   '/profile': _profile.default,
   '/editProfile': _editProfile.default,
   '/newDog': _newDog.default,
-  '/favouriteDogs': _favouriteDogs.default
+  '/favouriteDogs': _favouriteDogs.default,
+  '/myDogs': _myDogs.default
 };
 
 class Router {
@@ -14571,7 +14653,7 @@ function anchorRoute(e) {
   const pathname = e.target.closest('a').pathname;
   AppRouter.gotoRoute(pathname);
 }
-},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js"}],"App.js":[function(require,module,exports) {
+},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16431,7 +16513,7 @@ customElements.define('va-app-header', class AppHeader extends _litElement.LitEl
   }
 
   render() {
-    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>      \n      * {\n        box-sizing: border-box;\n      }\n      .app-header {\n        background: var(--brand-color);\n        position: fixed;\n        top: 0;\n        right: 0;\n        left: 0;\n        height: var(--app-header-height);\n        color: #fff;\n        display: flex;\n        z-index: 9;\n        box-shadow: 4px 0px 10px rgba(0,0,0,0.2);\n        align-items: center;\n      }\n      \n\n      .app-header-main {\n        flex-grow: 1;\n        display: flex;\n        align-items: center;\n      }\n\n      .app-header-main::slotted(h1){\n        color: #fff;\n      }\n\n      .app-logo a {\n        color: #fff;\n        text-decoration: none;\n        font-weight: bold;\n        font-size: 1.2em;\n        padding: .6em;\n        display: inline-block;        \n      }\n\n      .app-logo img {\n        width: 90px;\n      }\n      \n      .hamburger-btn::part(base) {\n        color: #fff;\n      }\n\n      .app-top-nav {\n        display: flex;\n        height: 100%;\n        align-items: center;\n      }\n\n      .app-top-nav a {\n        display: inline-block;\n        padding: .8em;\n        text-decoration: none;\n        color: #fff;\n      }\n      \n      .app-side-menu-items a {\n        display: block;\n        padding: .5em;\n        text-decoration: none;\n        font-size: 1.3em;\n        color: #333;\n      }\n\n      .app-side-menu-logo {\n        width: 120px;\n        margin-bottom: 1em;\n        position: absolute;\n        top: 2em;\n        left: 1.5em;\n      }\n\n      .page-title {\n        color: var(--app-header-txt-color);\n        margin-right: 0.5em;\n        font-size: var(--app-header-title-font-size);\n      }\n\n      /* active nav links */\n      .app-top-nav a.active,\n      .app-side-menu-items a.active {\n        font-weight: bold;\n      }\n\n      /* RESPONSIVE - MOBILE ------------------- */\n      @media all and (max-width: 768px){       \n        \n        .app-top-nav {\n          display: none;\n        }\n      }\n\n    </style>\n\n    <header class=\"app-header\">\n      <sl-icon-button class=\"hamburger-btn\" name=\"list\" @click=\"", "\" style=\"font-size: 1.5em;\"></sl-icon-button>       \n      \n      <div class=\"app-header-main\">\n        ", "\n        <slot></slot>\n      </div>\n\n      <nav class=\"app-top-nav\">\n        <a href=\"/\" @click=\"", "\">Home</a> \n        ", "  \n        <sl-dropdown>\n          <a slot=\"trigger\" href=\"#\" @click=\"", "\">\n            <sl-avatar style=\"--size: 24px;\" image=", "></sl-avatar> ", "\n          </a>\n          <sl-menu>            \n            <sl-menu-item @click=\"", "\">Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Edit Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Sign Out</sl-menu-item>\n          </sl-menu>\n        </sl-dropdown>\n      </nav>\n    </header>\n\n    <sl-drawer class=\"app-side-menu\" placement=\"left\">\n      <img class=\"app-side-menu-logo\" src=\"/images/logo.svg\">\n      <nav class=\"app-side-menu-items\">\n        <a href=\"/\" @click=\"", "\">Home</a>\n        ", "  \n        ", "  \n        <a href=\"/profile\" @click=\"", "\">Profile</a>\n        <a href=\"#\" @click=\"", "\">Sign Out</a>\n      </nav>  \n    </sl-drawer>\n    "])), this.hamburgerClick, this.title ? (0, _litElement.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <h1 class=\"page-title\">", "</h1>\n        "])), this.title) : "", _Router.anchorRoute, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>   \n        "])), _Router.anchorRoute) : '', e => e.preventDefault(), this.user && this.user.avatar ? "".concat(_App.default.apiBase, "/images/").concat(this.user.avatar) : '', this.user && this.user.firstName, () => (0, _Router.gotoRoute)('/profile'), () => (0, _Router.gotoRoute)('/editProfile'), () => _Auth.default.signOut(), this.menuClick, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>   \n        "])), this.menuClick) : '', this.user.accessLevel == 1 ? (0, _litElement.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n          <a href=\"/dogs\" @click=\"", "\">Dog Listings</a>\n          <a href=\"/favouriteDogs\" @click=\"", "\">Watch List</a>\n        "])), this.menuClick, this.menuClick) : '', this.menuClick, () => _Auth.default.signOut());
+    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>      \n      * {\n        box-sizing: border-box;\n      }\n      .app-header {\n        background: var(--brand-color);\n        position: fixed;\n        top: 0;\n        right: 0;\n        left: 0;\n        height: var(--app-header-height);\n        color: #fff;\n        display: flex;\n        z-index: 9;\n        box-shadow: 4px 0px 10px rgba(0,0,0,0.2);\n        align-items: center;\n      }\n      \n\n      .app-header-main {\n        flex-grow: 1;\n        display: flex;\n        align-items: center;\n      }\n\n      .app-header-main::slotted(h1){\n        color: #fff;\n      }\n\n      .app-logo a {\n        color: #fff;\n        text-decoration: none;\n        font-weight: bold;\n        font-size: 1.2em;\n        padding: .6em;\n        display: inline-block;        \n      }\n\n      .app-logo img {\n        width: 90px;\n      }\n      \n      .hamburger-btn::part(base) {\n        color: #fff;\n      }\n\n      .app-top-nav {\n        display: flex;\n        height: 100%;\n        align-items: center;\n      }\n\n      .app-top-nav a {\n        display: inline-block;\n        padding: .8em;\n        text-decoration: none;\n        color: #fff;\n      }\n      \n      .app-side-menu-items a {\n        display: block;\n        padding: .5em;\n        text-decoration: none;\n        font-size: 1.3em;\n        color: #333;\n      }\n\n      .app-side-menu-logo {\n        width: 120px;\n        margin-bottom: 1em;\n        position: absolute;\n        top: 2em;\n        left: 1.5em;\n      }\n\n      .page-title {\n        color: var(--app-header-txt-color);\n        margin-right: 0.5em;\n        font-size: var(--app-header-title-font-size);\n      }\n\n      /* active nav links */\n      .app-top-nav a.active,\n      .app-side-menu-items a.active {\n        font-weight: bold;\n      }\n\n      /* RESPONSIVE - MOBILE ------------------- */\n      @media all and (max-width: 768px){       \n        \n        .app-top-nav {\n          display: none;\n        }\n      }\n\n    </style>\n\n    <header class=\"app-header\">\n      <sl-icon-button class=\"hamburger-btn\" name=\"list\" @click=\"", "\" style=\"font-size: 1.5em;\"></sl-icon-button>       \n      \n      <div class=\"app-header-main\">\n        ", "\n        <slot></slot>\n      </div>\n\n      <nav class=\"app-top-nav\">\n        <a href=\"/\" @click=\"", "\">Home</a> \n        ", "  \n        <sl-dropdown>\n          <a slot=\"trigger\" href=\"#\" @click=\"", "\">\n            <sl-avatar style=\"--size: 24px;\" image=", "></sl-avatar> ", "\n          </a>\n          <sl-menu>            \n            <sl-menu-item @click=\"", "\">Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Edit Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Sign Out</sl-menu-item>\n          </sl-menu>\n        </sl-dropdown>\n      </nav>\n    </header>\n\n    <sl-drawer class=\"app-side-menu\" placement=\"left\">\n      <img class=\"app-side-menu-logo\" src=\"/images/logo.svg\">\n      <nav class=\"app-side-menu-items\">\n        <a href=\"/\" @click=\"", "\">Home</a>\n        ", "  \n        ", "  \n        <a href=\"/profile\" @click=\"", "\">Profile</a>\n        <a href=\"#\" @click=\"", "\">Sign Out</a>\n      </nav>  \n    </sl-drawer>\n    "])), this.hamburgerClick, this.title ? (0, _litElement.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <h1 class=\"page-title\">", "</h1>\n        "])), this.title) : "", _Router.anchorRoute, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>   \n        "])), _Router.anchorRoute) : '', e => e.preventDefault(), this.user && this.user.avatar ? "".concat(_App.default.apiBase, "/images/").concat(this.user.avatar) : '', this.user && this.user.firstName, () => (0, _Router.gotoRoute)('/profile'), () => (0, _Router.gotoRoute)('/editProfile'), () => _Auth.default.signOut(), this.menuClick, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>  \n          <a href=\"/myDogs\" @click=\"", "\">My Dogs</a>  \n        "])), this.menuClick, this.menuClick) : '', this.user.accessLevel == 1 ? (0, _litElement.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n          <a href=\"/dogs\" @click=\"", "\">Dog Listings</a>\n          <a href=\"/favouriteDogs\" @click=\"", "\">Watch List</a>\n        "])), this.menuClick, this.menuClick) : '', this.menuClick, () => _Auth.default.signOut());
   }
 
 });
@@ -16509,7 +16591,7 @@ customElements.define('va-dog', class Dog extends _litElement.LitElement {
 
     dialogEl.className = 'dog-dialog'; // sl-dialog content
 
-    const dialogContent = (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .wrap {\n            display: flex;\n        }\n        .image {\n            width: 50%;\n        }\n        .image img {\n            width: 100%;\n        }\n        .content {\n            padding-left: 1em;\n        }\n        .gender span,\n        .length span {\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n        </style>\n        <div class=\"wrap\">\n        <div class=\"image\">\n            <img src=\"", "/images/", "\" alt=\"", "\" />\n        </div>\n        <div class=\"content\">\n            <h1>", "</h1>\n            <p>", "</p>\n            <p class=\"size\">$", "</p>\n            <p class=\"age\">Age: <span>", "</span></p>\n            <p class=\"nature\">Nature: <span>", "</span></p>\n\n            <sl-button @click=", ">\n            <sl-icon slot=\"prefix\" name=\"heart-fill\"></sl-icon>\n            Add to Favourites\n            </sl-button>\n        </div>\n        </div>\n      "])), _App.default.apiBase, this.image, this.name, this.name, this.breed, this.size, this.age, this.nature, this.addFavHandler.bind(this));
+    const dialogContent = (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .wrap {\n            display: flex;\n        }\n        .image {\n            width: 50%;\n        }\n        .image img {\n            width: 100%;\n        }\n        .content {\n            padding-left: 1em;\n        }\n        .gender span,\n        .length span {\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n        </style>\n        <div class=\"wrap\">\n        <div class=\"image\">\n            <img src=\"", "/images/", "\" alt=\"", "\" />\n        </div>\n        <div class=\"content\">\n            <h1>", "</h1>\n            <p>Breed: <span>", "</span></p>\n            <p class=\"size\">Size: <span>", "</span></p>\n            <p class=\"age\">Age: <span>", "</span></p>\n            <p class=\"nature\">Nature: <span>", "</span></p>\n\n            <sl-button @click=", ">\n            <sl-icon slot=\"prefix\" name=\"heart-fill\"></sl-icon>\n            Add to Favourites\n            </sl-button>\n        </div>\n        </div>\n      "])), _App.default.apiBase, this.image, this.name, this.name, this.breed, this.size, this.age, this.nature, this.addFavHandler.bind(this));
     (0, _litHtml.render)(dialogContent, dialogEl); // append to document.body
 
     document.body.append(dialogEl); // show dialog
@@ -16655,7 +16737,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54889" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52843" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

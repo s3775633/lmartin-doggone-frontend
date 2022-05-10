@@ -1,12 +1,12 @@
 import { LitElement, html, css } from '@polymer/lit-element'
 import { render } from 'lit-html'
-import {anchorRoute, gotoRoute} from './../Router'
-import Auth from './../Auth'
-import App from './../App'
-import UserAPI from './../UserAPI'
-import Toast from './../Toast'
+import {anchorRoute, gotoRoute} from '../Router'
+import Auth from '../Auth'
+import App from '../App'
+import UserAPI from '../UserAPI'
+import Toast from '../Toast'
 
-customElements.define('va-dog', class Dog extends LitElement {
+customElements.define('va-myDog', class Dog extends LitElement {
   constructor(){
     super()    
   }
@@ -145,6 +145,7 @@ customElements.define('va-dog', class Dog extends LitElement {
         <h3>${this.breed}</h3>
         <p class="owner">${this.owner.firstName} ${this.owner.lastName}</p>
         <sl-button @click=${this.moreInfoHandler}>More Info</sl-button>
+        <sl-button @click=${this.moreInfoHandler}>Edit</sl-button>
         <sl-icon-button name="heart-fill" label="Add to favourites" @click=${this.addFavHandler.bind(this)}></sl-icon-button>
         </sl-card>
     `

@@ -184,7 +184,8 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
       <nav class="app-side-menu-items">
         <a href="/" @click="${this.menuClick}">Home</a>
         ${(this.user.accessLevel == 2) ? html`
-          <a href="/newDog" @click="${this.menuClick}">Add Dog</a>   
+          <a href="/newDog" @click="${this.menuClick}">Add Dog</a>  
+          <a href="/myDogs" @click="${this.menuClick}">My Dogs</a>  
         ` : ''}  
         ${(this.user.accessLevel == 1) ? html`
           <a href="/dogs" @click="${this.menuClick}">Dog Listings</a>

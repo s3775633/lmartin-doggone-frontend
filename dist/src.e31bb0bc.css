@@ -3,7 +3,7 @@
   --base-txt-color: #222;
   --heading-color: #333;
   --base-font-family: "Work Sans", sans-serif;
-  --body-bg: #fff;
+  --body-bg: #E6E6E6;
   --brand-color: #3F7294;
   --link-color: --brand-color;
   --app-header-height: 60px;
@@ -33,7 +33,7 @@ body {
   color: var(--base-txt-color);
   font-family: var(--base-font-family);
   font-weight: 300;
-  background: var(--body-bg);
+  background-color: var(--body-bg);
   height: 100vh;
 }
 

@@ -9,6 +9,7 @@ import guideView from './views/pages/guide'
 import dogsView from './views/pages/dogs'
 import newDogView from './views/pages/newDog'
 import favouriteDogsView from './views/pages/favouriteDogs'
+import myDogsView from './views/pages/myDogs'
 
 // define routes
 const routes = {
@@ -21,7 +22,8 @@ const routes = {
 	'/profile': profileView,
 	'/editProfile': editProfileView,
 	'/newDog': newDogView,
-	'/favouriteDogs': favouriteDogsView	
+	'/favouriteDogs': favouriteDogsView,
+	'/myDogs': myDogsView	
 }
 
 class Router {
