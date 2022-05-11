@@ -14134,6 +14134,53 @@ var _Toast = _interopRequireDefault(require("./Toast"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class DogAPI {
+  constructor() {
+    this.currentDog = {};
+  }
+
+  async updateDog(dogId, dogData) {
+    let dataType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'form';
+    // validate
+    if (!dogId || !dogData) return;
+    let responseHeader; // form data
+
+    if (dataType == 'form') {
+      // fetch response header normal (form data)
+      responseHeader = {
+        method: "PUT",
+        headers: {
+          "Authorization": "Bearer ".concat(localStorage.accessToken)
+        },
+        body: dogData
+      }; // json data
+    } else if (dataType == 'json') {
+      responseHeader = {
+        method: "PUT",
+        headers: {
+          "Authorization": "Bearer ".concat(localStorage.accessToken),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dogData)
+      };
+    } // make fetch request to backend
+
+
+    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), responseHeader); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem updating dog');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
   async newDog(formData) {
     // send fetch request
     const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
@@ -14162,6 +14209,32 @@ class DogAPI {
     return data;
   }
 
+  async getDog(dogId) {
+    // validate
+    if (!dogId) return;
+    console.log(localStorage.accessToken); // fetch the json data
+
+    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), {
+      method: 'GET',
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      }
+    }); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem getting user');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
   async getDogs() {
     // fetch the json data
     const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
@@ -14182,6 +14255,10 @@ class DogAPI {
     const data = await response.json(); // return data
 
     return data;
+  }
+
+  setCurrentDog(dogID) {
+    this.currentDog = dogID;
   }
 
 }
@@ -14536,6 +14613,7 @@ class myDogsView {
       const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
       this.myDogs = await _DogAPI.default.getDogs();
       this.myDogs = this.myDogs.filter(dog => dog.owner == currentUser._id);
+      console.log(this.myDogs);
       this.render();
     } catch (err) {
       _Toast.default.show(err, 'error');
@@ -14543,7 +14621,7 @@ class myDogsView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"My Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">        \n        <div class=\"dogs-grid\">\n        ", "\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myDogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          ", "\n        "])), this.myDogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n            <va-myDog class=\"dog-card\" \n              id=\"", "\"\n              name=\"", "\" \n              breed=\"", "\"\n              owner=\"", "\"\n              size=\"", "\"\n              age=\"", "\"\n              nature=\"", "\"\n              Energy=\"", "\"\n              image=\"", "\"\n            >\n            </va-myDog>\n          "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"My Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">        \n        <div class=\"dogs-grid\">\n        ", "\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myDogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          ", "\n        "])), this.myDogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n            <va-my-dog class=\"dog-card\" \n              id=\"", "\"\n              name=\"", "\" \n              breed=\"", "\"\n              owner=\"", "\"\n              size=\"", "\"\n              age=\"", "\"\n              nature=\"", "\"\n              Energy=\"", "\"\n              image=\"", "\"\n            >\n            </va-my-dog>\n          "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14552,7 +14630,107 @@ class myDogsView {
 var _default = new myDogsView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../DogAPI":"DogAPI.js","../../Toast":"Toast.js","./../../UserAPI":"UserAPI.js"}],"Router.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../DogAPI":"DogAPI.js","../../Toast":"Toast.js","./../../UserAPI":"UserAPI.js"}],"views/pages/editDog.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("../../App"));
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../../Router");
+
+var _Auth = _interopRequireDefault(require("../../Auth"));
+
+var _Utils = _interopRequireDefault(require("../../Utils"));
+
+var _DogAPI = _interopRequireDefault(require("../../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _templateObject, _templateObject2, _templateObject3;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+class EditDogView {
+  init() {
+    console.log('EditDogView.init');
+    document.title = 'Edit Dog';
+    this.dog = null;
+    this.render();
+
+    _Utils.default.pageIntroAnim();
+
+    this.getDog();
+  }
+
+  async getDog() {
+    try {
+      this.dog = await _DogAPI.default.getDog(_DogAPI.default.currentDog);
+      this.render();
+      const fileTag = document.getElementById("file-upload");
+      fileTag.addEventListener("change", event => {
+        this.changeImage();
+      });
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  changeImage() {
+    var reader;
+    const input = document.getElementById("file-upload");
+    const preview = document.getElementById("image-preview");
+
+    if (input.files && input.files[0]) {
+      reader = new FileReader();
+
+      reader.onload = function (e) {
+        console.log(preview);
+        preview.setAttribute('src', e.target.result);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  async editDogSubmitHandler(e) {
+    e.preventDefault();
+    const formData = e.detail.formData;
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.setAttribute('loading', '');
+
+    try {
+      const updatedDog = await _DogAPI.default.updateDog(_DogAPI.default.currentDog, formData);
+      this.dog = updatedDog;
+      _DogAPI.default.currentDog = updatedDog;
+      (0, _Router.gotoRoute)('/myDogs');
+
+      _Toast.default.show('Dog updated');
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+
+    submitBtn.removeAttribute('loading');
+  }
+
+  render() {
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .new-dog-menu {\n          display: flex;\n          flex-wrap: wrap;\n        }\n        .left-panel {\n          padding: 20px;\n          width: 40%;\n          height: 100%;\n        }\n        .right-panel {\n          padding: 20px;\n          width: 60%;\n          height: 100%;\n        }\n        #image-preview {\n          width: 100%;\n          height: 400px;\n          background-image: url('./../../images/Upload-tile.png');\n          background-size: 100% 100%;\n          background-repeat: no-repeat;\n        }\n        .new-dog-input {\n          margin-bottom: 25px;\n        }\n        input[type=\"file\"] {\n          display: none;\n        }\n        .image-upload {\n          margin-bottom: 10px !important;\n        }\n        .custom-file-upload {\n          width: 200px;\n          height: 40px;\n          background-color: var(--brand-color);\n          border: 1px solid #ccc;\n          display: inline-block;\n          padding: 9px 9px;\n          cursor: pointer;\n          border-radius: 4px;\n          color: #ffffff;\n          font-weight: 500;\n          text-align: center;\n        }\n        .dog-submit {\n          float: right;\n          width: 200px;\n        }\n        @media only screen and (max-width: 800px) {\n          .left-panel {\n            width: 100%;\n          }\n          .right-panel {\n            width: 100%;\n          }\n        }\n      </style>\n      <va-app-header title=\"Edit Dog\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">  \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.dog == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n        <sl-spinner></sl-spinner>   \n      "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n        <sl-form class=\"form-signup\" @sl-submit=", ">\n        <input type=\"hidden\" name=\"owner\" value=\"", "\" />\n        <input type=\"hidden\" name=\"_id\" value=\"", "\" />\n        <div class=\"new-dog-menu\">\n          <div class=\"left-panel\">\n          <img id=\"image-preview\" src=\"", "/images/", "\"></img>\n            <div id=\"input-group\" class=\"image-upload\" style=\"margin-bottom: 2em;\">\n              <label class=\"custom-file-upload\">Upload Image\n                <input class=\"upload-button\" id=\"file-upload\" type=\"file\" name=\"image\"/>       \n              </label>       \n            </div>\n            <div class=\"input-group new-dog-input\">\n            <sl-textarea name=\"description\" rows=\"6\" placeholder=\"Description\" value=\"", "\"></sl-textarea>\n            </div>\n          </div>\n          <div class=\"right-panel\">\n            <div class=\"input-group new-dog-input\">\n            <label>Name</label>\n              <sl-input name=\"name\" type=\"text\" placeholder=\"Dog Name\" value=\"", "\" required></sl-input>\n            </div>\n            <div class=\"input-group new-dog-input\">    \n            <label>Breed</label>          \n              <sl-select name=\"breed\" placeholder=\"Breed\" value=\"", "\" required>\n                <sl-menu-item value=\"border collie\">border collie</sl-menu-item>\n                <sl-menu-item value=\"Dashhound\">dashhound</sl-menu-item>\n                <sl-menu-item value=\"great dane\">great dane</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n            <label>Age</label>\n              <sl-input name=\"age\" placeholder=\"Age\" value=\"", "\" required></sl-input>\n            </div>\n            <div class=\"input-group new-dog-input\">\n            <label>Nature</label>\n              <sl-select name=\"nature\" placeholder=\"Nature\" value=\"", "\" required>\n                <sl-menu-item value=\"loving\">loving</sl-menu-item>\n                <sl-menu-item value=\"playful\">playful</sl-menu-item>\n                <sl-menu-item value=\"protective\">protective</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n            <label>Energy</label>\n              <sl-select name=\"energy\" placeholder=\"Energy\" value=\"", "\" required>\n                <sl-menu-item value=\"low\" >low</sl-menu-item>\n                <sl-menu-item value=\"medium\">medium</sl-menu-item>\n                <sl-menu-item value=\"high\">high</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n            <label>Size</label>\n              <sl-select name=\"size\" placeholder=\"Size\" value=\"", "\" required>\n                <sl-menu-item value=\"small\">small</sl-menu-item>\n                <sl-menu-item value=\"medium\">medium</sl-menu-item>\n                <sl-menu-item value=\"large\">large</sl-menu-item>\n              </sl-select>\n            </div>\n            <div class=\"input-group new-dog-input\">\n            <label>Sex</label>\n              <sl-select name=\"sex\" placeholder=\"Sex\" value=\"", "\" required>\n                <sl-menu-item value=\"male\">male</sl-menu-item>\n                <sl-menu-item value=\"female\">female</sl-menu-item>\n              </sl-select>\n            </div>\n            <sl-button type=\"primary\" class=\"submit-btn dog-submit\" submit>Edit Dog</sl-button>\n          </div>\n        </div>\n      </sl-form>\n      "])), this.editDogSubmitHandler, _Auth.default.currentUser._id, this.dog._id, _App.default.apiBase, this.dog.image, this.dog.description, this.dog.name, this.dog.breed, this.dog.age, this.dog.nature, this.dog.energy, this.dog.size, this.dog.sex));
+    (0, _litHtml.render)(template, _App.default.rootEl);
+  }
+
+}
+
+var _default = new EditDogView();
+
+exports.default = _default;
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14584,6 +14762,8 @@ var _favouriteDogs = _interopRequireDefault(require("./views/pages/favouriteDogs
 
 var _myDogs = _interopRequireDefault(require("./views/pages/myDogs"));
 
+var _editDog = _interopRequireDefault(require("./views/pages/editDog"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import views
@@ -14599,7 +14779,8 @@ const routes = {
   '/editProfile': _editProfile.default,
   '/newDog': _newDog.default,
   '/favouriteDogs': _favouriteDogs.default,
-  '/myDogs': _myDogs.default
+  '/myDogs': _myDogs.default,
+  '/editDog': _editDog.default
 };
 
 class Router {
@@ -14653,7 +14834,7 @@ function anchorRoute(e) {
   const pathname = e.target.closest('a').pathname;
   AppRouter.gotoRoute(pathname);
 }
-},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js"}],"App.js":[function(require,module,exports) {
+},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js","./views/pages/editDog":"views/pages/editDog.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14671,7 +14852,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class App {
   constructor() {
-    this.name = "Haircuts";
+    this.name = "Dogs";
     this.version = "1.0.0";
     this.apiBase = 'http://localhost:3000';
     this.rootEl = document.getElementById("root");
@@ -16618,7 +16799,87 @@ customElements.define('va-dog', class Dog extends _litElement.LitElement {
   }
 
 });
-},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","./../Router":"Router.js","./../Auth":"Auth.js","./../App":"App.js","./../UserAPI":"UserAPI.js","./../Toast":"Toast.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","./../Router":"Router.js","./../Auth":"Auth.js","./../App":"App.js","./../UserAPI":"UserAPI.js","./../Toast":"Toast.js"}],"components/va-my-dog.js":[function(require,module,exports) {
+"use strict";
+
+var _litElement = require("@polymer/lit-element");
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../Router");
+
+var _Auth = _interopRequireDefault(require("../Auth"));
+
+var _App = _interopRequireDefault(require("../App"));
+
+var _UserAPI = _interopRequireDefault(require("../UserAPI"));
+
+var _DogAPI = _interopRequireDefault(require("../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../Toast"));
+
+var _templateObject;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+customElements.define('va-my-dog', class Dog extends _litElement.LitElement {
+  constructor() {
+    super();
+  }
+
+  static get properties() {
+    return {
+      id: {
+        type: String
+      },
+      name: {
+        type: String
+      },
+      breed: {
+        type: String
+      },
+      owner: {
+        type: Object
+      },
+      size: {
+        type: String
+      },
+      age: {
+        type: Number
+      },
+      nature: {
+        type: String
+      },
+      energy: {
+        type: String
+      },
+      image: {
+        type: String
+      }
+    };
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+  }
+
+  testHandler() {
+    alert("test");
+  }
+
+  setSelectedDog() {
+    _DogAPI.default.currentDog = this.id;
+    (0, _Router.gotoRoute)('/editDog');
+  }
+
+  render() {
+    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n        .owner {\n            font-size: 0.9em;\n            font-style: italic;\n            opacity: 0.9;\n        }\n        .image {\n            width: 50%;\n        }\n        img {\n            width: 100%;\n            height: 350px;\n        }\n        .card-size {\n          width: 100%;\n        }\n    </style>  \n    <sl-card class=\"card-size\">\n        <img slot=\"image\" src=\"", "/images/", "\" />\n        <h2>", "</h2>\n        <h3>", "</h3>\n        <p class=\"owner\">", " ", "</p>\n        <sl-button @click=", ">Edit</sl-button>\n        </sl-card>\n    "])), _App.default.apiBase, this.image, this.name, this.breed, this.owner.firstName, this.owner.lastName, this.setSelectedDog);
+  }
+
+});
+},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","../Router":"Router.js","../Auth":"Auth.js","../App":"App.js","../UserAPI":"UserAPI.js","../DogAPI":"DogAPI.js","../Toast":"Toast.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
 function getBundleURLCached() {
@@ -16699,6 +16960,8 @@ require("./components/va-app-header");
 
 require("./components/va-dog");
 
+require("./components/va-my-dog");
+
 require("./scss/master.scss");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16709,7 +16972,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', () => {
   _App.default.init();
 });
-},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./components/va-my-dog":"components/va-my-dog.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -16737,7 +17000,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52843" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57422" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

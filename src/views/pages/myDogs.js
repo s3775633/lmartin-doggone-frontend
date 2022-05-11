@@ -21,6 +21,7 @@ class myDogsView {
       const currentUser = await UserAPI.getUser(Auth.currentUser._id)
       this.myDogs = await DogAPI.getDogs()
       this.myDogs = this.myDogs.filter(dog => dog.owner == currentUser._id)
+      console.log(this.myDogs)
       this.render()
     }catch(err){
       Toast.show(err, 'error')
@@ -36,7 +37,7 @@ class myDogsView {
           <sl-spinner></sl-spinner>
         ` : html`
           ${this.myDogs.map(dog => html`
-            <va-myDog class="dog-card" 
+            <va-my-dog class="dog-card" 
               id="${dog._id}"
               name="${dog.name}" 
               breed="${dog.breed}"
@@ -47,7 +48,7 @@ class myDogsView {
               Energy="${dog.energy}"
               image="${dog.image}"
             >
-            </va-myDog>
+            </va-my-dog>
           `)
           }
         `}
