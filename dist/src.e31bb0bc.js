@@ -14730,7 +14730,144 @@ class EditDogView {
 var _default = new EditDogView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"MessageAPI.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("./App"));
+
+var _Auth = _interopRequireDefault(require("./Auth"));
+
+var _Toast = _interopRequireDefault(require("./Toast"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class MessageAPI {
+  async newMessage(formData) {
+    // send fetch request
+    const response = await fetch("".concat(_App.default.apiBase, "/message"), {
+      method: 'POST',
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      },
+      body: formData
+    }); // if response not ok
+
+    if (!response.ok) {
+      let message = 'Problem adding message';
+
+      if (response.status == 400) {
+        const err = await response.json();
+        message = err.message;
+      } // throw error (exit this function)      
+
+
+      throw new Error('Problem creating message');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  async getMessages() {
+    // fetch the json data
+    const response = await fetch("".concat(_App.default.apiBase, "/message"), {
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      }
+    }); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem getting messages');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+}
+
+var _default = new MessageAPI();
+
+exports.default = _default;
+},{"./App":"App.js","./Auth":"Auth.js","./Toast":"Toast.js"}],"views/pages/messages.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("../../App"));
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../../Router");
+
+var _Auth = _interopRequireDefault(require("../../Auth"));
+
+var _Utils = _interopRequireDefault(require("../../Utils"));
+
+var _UserAPI = _interopRequireDefault(require("./../../UserAPI"));
+
+var _MessageAPI = _interopRequireDefault(require("../../MessageAPI"));
+
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _templateObject, _templateObject2, _templateObject3, _templateObject4;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+class MessagesView {
+  async init() {
+    document.title = 'Messages';
+    this.myMessages = null;
+    this.render();
+
+    _Utils.default.pageIntroAnim();
+
+    await this.getMyMessages();
+  }
+
+  async getMyMessages() {
+    try {
+      // for buyer
+      // for seller
+      const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
+      this.myMessages = await _MessageAPI.default.getMessages();
+      this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
+      console.log(this.myMessages);
+      this.render();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  render() {
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["  \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["    \n        <p>", "</p>\n        "])), messages.message))));
+    (0, _litHtml.render)(template, _App.default.rootEl);
+  }
+
+}
+
+var _default = new MessagesView();
+
+exports.default = _default;
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14764,6 +14901,8 @@ var _myDogs = _interopRequireDefault(require("./views/pages/myDogs"));
 
 var _editDog = _interopRequireDefault(require("./views/pages/editDog"));
 
+var _messages = _interopRequireDefault(require("./views/pages/messages"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import views
@@ -14780,7 +14919,8 @@ const routes = {
   '/newDog': _newDog.default,
   '/favouriteDogs': _favouriteDogs.default,
   '/myDogs': _myDogs.default,
-  '/editDog': _editDog.default
+  '/editDog': _editDog.default,
+  '/messages': _messages.default
 };
 
 class Router {
@@ -14834,7 +14974,7 @@ function anchorRoute(e) {
   const pathname = e.target.closest('a').pathname;
   AppRouter.gotoRoute(pathname);
 }
-},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js","./views/pages/editDog":"views/pages/editDog.js"}],"App.js":[function(require,module,exports) {
+},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js","./views/pages/editDog":"views/pages/editDog.js","./views/pages/messages":"views/pages/messages.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16694,7 +16834,7 @@ customElements.define('va-app-header', class AppHeader extends _litElement.LitEl
   }
 
   render() {
-    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>      \n      * {\n        box-sizing: border-box;\n      }\n      .app-header {\n        background: var(--brand-color);\n        position: fixed;\n        top: 0;\n        right: 0;\n        left: 0;\n        height: var(--app-header-height);\n        color: #fff;\n        display: flex;\n        z-index: 9;\n        box-shadow: 4px 0px 10px rgba(0,0,0,0.2);\n        align-items: center;\n      }\n      \n\n      .app-header-main {\n        flex-grow: 1;\n        display: flex;\n        align-items: center;\n      }\n\n      .app-header-main::slotted(h1){\n        color: #fff;\n      }\n\n      .app-logo a {\n        color: #fff;\n        text-decoration: none;\n        font-weight: bold;\n        font-size: 1.2em;\n        padding: .6em;\n        display: inline-block;        \n      }\n\n      .app-logo img {\n        width: 90px;\n      }\n      \n      .hamburger-btn::part(base) {\n        color: #fff;\n      }\n\n      .app-top-nav {\n        display: flex;\n        height: 100%;\n        align-items: center;\n      }\n\n      .app-top-nav a {\n        display: inline-block;\n        padding: .8em;\n        text-decoration: none;\n        color: #fff;\n      }\n      \n      .app-side-menu-items a {\n        display: block;\n        padding: .5em;\n        text-decoration: none;\n        font-size: 1.3em;\n        color: #333;\n      }\n\n      .app-side-menu-logo {\n        width: 120px;\n        margin-bottom: 1em;\n        position: absolute;\n        top: 2em;\n        left: 1.5em;\n      }\n\n      .page-title {\n        color: var(--app-header-txt-color);\n        margin-right: 0.5em;\n        font-size: var(--app-header-title-font-size);\n      }\n\n      /* active nav links */\n      .app-top-nav a.active,\n      .app-side-menu-items a.active {\n        font-weight: bold;\n      }\n\n      /* RESPONSIVE - MOBILE ------------------- */\n      @media all and (max-width: 768px){       \n        \n        .app-top-nav {\n          display: none;\n        }\n      }\n\n    </style>\n\n    <header class=\"app-header\">\n      <sl-icon-button class=\"hamburger-btn\" name=\"list\" @click=\"", "\" style=\"font-size: 1.5em;\"></sl-icon-button>       \n      \n      <div class=\"app-header-main\">\n        ", "\n        <slot></slot>\n      </div>\n\n      <nav class=\"app-top-nav\">\n        <a href=\"/\" @click=\"", "\">Home</a> \n        ", "  \n        <sl-dropdown>\n          <a slot=\"trigger\" href=\"#\" @click=\"", "\">\n            <sl-avatar style=\"--size: 24px;\" image=", "></sl-avatar> ", "\n          </a>\n          <sl-menu>            \n            <sl-menu-item @click=\"", "\">Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Edit Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Sign Out</sl-menu-item>\n          </sl-menu>\n        </sl-dropdown>\n      </nav>\n    </header>\n\n    <sl-drawer class=\"app-side-menu\" placement=\"left\">\n      <img class=\"app-side-menu-logo\" src=\"/images/logo.svg\">\n      <nav class=\"app-side-menu-items\">\n        <a href=\"/\" @click=\"", "\">Home</a>\n        ", "  \n        ", "  \n        <a href=\"/profile\" @click=\"", "\">Profile</a>\n        <a href=\"#\" @click=\"", "\">Sign Out</a>\n      </nav>  \n    </sl-drawer>\n    "])), this.hamburgerClick, this.title ? (0, _litElement.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <h1 class=\"page-title\">", "</h1>\n        "])), this.title) : "", _Router.anchorRoute, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>   \n        "])), _Router.anchorRoute) : '', e => e.preventDefault(), this.user && this.user.avatar ? "".concat(_App.default.apiBase, "/images/").concat(this.user.avatar) : '', this.user && this.user.firstName, () => (0, _Router.gotoRoute)('/profile'), () => (0, _Router.gotoRoute)('/editProfile'), () => _Auth.default.signOut(), this.menuClick, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>  \n          <a href=\"/myDogs\" @click=\"", "\">My Dogs</a>  \n        "])), this.menuClick, this.menuClick) : '', this.user.accessLevel == 1 ? (0, _litElement.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n          <a href=\"/dogs\" @click=\"", "\">Dog Listings</a>\n          <a href=\"/favouriteDogs\" @click=\"", "\">Watch List</a>\n        "])), this.menuClick, this.menuClick) : '', this.menuClick, () => _Auth.default.signOut());
+    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>      \n      * {\n        box-sizing: border-box;\n      }\n      .app-header {\n        background: var(--brand-color);\n        position: fixed;\n        top: 0;\n        right: 0;\n        left: 0;\n        height: var(--app-header-height);\n        color: #fff;\n        display: flex;\n        z-index: 9;\n        box-shadow: 4px 0px 10px rgba(0,0,0,0.2);\n        align-items: center;\n      }\n      \n\n      .app-header-main {\n        flex-grow: 1;\n        display: flex;\n        align-items: center;\n      }\n\n      .app-header-main::slotted(h1){\n        color: #fff;\n      }\n\n      .app-logo a {\n        color: #fff;\n        text-decoration: none;\n        font-weight: bold;\n        font-size: 1.2em;\n        padding: .6em;\n        display: inline-block;        \n      }\n\n      .app-logo img {\n        width: 90px;\n      }\n      \n      .hamburger-btn::part(base) {\n        color: #fff;\n      }\n\n      .app-top-nav {\n        display: flex;\n        height: 100%;\n        align-items: center;\n      }\n\n      .app-top-nav a {\n        display: inline-block;\n        padding: .8em;\n        text-decoration: none;\n        color: #fff;\n      }\n      \n      .app-side-menu-items a {\n        display: block;\n        padding: .5em;\n        text-decoration: none;\n        font-size: 1.3em;\n        color: #333;\n      }\n\n      .app-side-menu-logo {\n        width: 120px;\n        margin-bottom: 1em;\n        position: absolute;\n        top: 2em;\n        left: 1.5em;\n      }\n\n      .page-title {\n        color: var(--app-header-txt-color);\n        margin-right: 0.5em;\n        font-size: var(--app-header-title-font-size);\n      }\n\n      /* active nav links */\n      .app-top-nav a.active,\n      .app-side-menu-items a.active {\n        font-weight: bold;\n      }\n\n      /* RESPONSIVE - MOBILE ------------------- */\n      @media all and (max-width: 768px){       \n        \n        .app-top-nav {\n          display: none;\n        }\n      }\n\n    </style>\n\n    <header class=\"app-header\">\n      <sl-icon-button class=\"hamburger-btn\" name=\"list\" @click=\"", "\" style=\"font-size: 1.5em;\"></sl-icon-button>       \n      \n      <div class=\"app-header-main\">\n        ", "\n        <slot></slot>\n      </div>\n\n      <nav class=\"app-top-nav\">\n        <a href=\"/\" @click=\"", "\">Home</a> \n        ", "  \n        <sl-dropdown>\n          <a slot=\"trigger\" href=\"#\" @click=\"", "\">\n            <sl-avatar style=\"--size: 24px;\" image=", "></sl-avatar> ", "\n          </a>\n          <sl-menu>            \n            <sl-menu-item @click=\"", "\">Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Edit Profile</sl-menu-item>\n            <sl-menu-item @click=\"", "\">Sign Out</sl-menu-item>\n          </sl-menu>\n        </sl-dropdown>\n      </nav>\n    </header>\n\n    <sl-drawer class=\"app-side-menu\" placement=\"left\">\n      <img class=\"app-side-menu-logo\" src=\"/images/logo.svg\">\n      <nav class=\"app-side-menu-items\">\n        <a href=\"/\" @click=\"", "\">Home</a>\n        ", "  \n        ", "  \n        <a href=\"/messages\" @click=\"", "\">Messages</a>\n        <a href=\"/profile\" @click=\"", "\">Profile</a>\n        <a href=\"#\" @click=\"", "\">Sign Out</a>\n      </nav>  \n    </sl-drawer>\n    "])), this.hamburgerClick, this.title ? (0, _litElement.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <h1 class=\"page-title\">", "</h1>\n        "])), this.title) : "", _Router.anchorRoute, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>   \n        "])), _Router.anchorRoute) : '', e => e.preventDefault(), this.user && this.user.avatar ? "".concat(_App.default.apiBase, "/images/").concat(this.user.avatar) : '', this.user && this.user.firstName, () => (0, _Router.gotoRoute)('/profile'), () => (0, _Router.gotoRoute)('/editProfile'), () => _Auth.default.signOut(), this.menuClick, this.user.accessLevel == 2 ? (0, _litElement.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <a href=\"/newDog\" @click=\"", "\">Add Dog</a>  \n          <a href=\"/myDogs\" @click=\"", "\">My Dogs</a>  \n        "])), this.menuClick, this.menuClick) : '', this.user.accessLevel == 1 ? (0, _litElement.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n          <a href=\"/dogs\" @click=\"", "\">Dog Listings</a>\n          <a href=\"/favouriteDogs\" @click=\"", "\">Watch List</a>\n        "])), this.menuClick, this.menuClick) : '', this.menuClick, this.menuClick, () => _Auth.default.signOut());
   }
 
 });
@@ -17000,7 +17140,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57422" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57502" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

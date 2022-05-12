@@ -11,6 +11,7 @@ import newDogView from './views/pages/newDog'
 import favouriteDogsView from './views/pages/favouriteDogs'
 import myDogsView from './views/pages/myDogs'
 import editDogView from './views/pages/editDog'
+import messagesView from './views/pages/messages'
 
 // define routes
 const routes = {
@@ -25,7 +26,8 @@ const routes = {
 	'/newDog': newDogView,
 	'/favouriteDogs': favouriteDogsView,
 	'/myDogs': myDogsView,	
-	'/editDog': editDogView
+	'/editDog': editDogView,
+	'/messages': messagesView
 }
 
 class Router {

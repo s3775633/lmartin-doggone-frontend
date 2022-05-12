@@ -191,6 +191,7 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
           <a href="/dogs" @click="${this.menuClick}">Dog Listings</a>
           <a href="/favouriteDogs" @click="${this.menuClick}">Watch List</a>
         ` : ''}  
+        <a href="/messages" @click="${this.menuClick}">Messages</a>
         <a href="/profile" @click="${this.menuClick}">Profile</a>
         <a href="#" @click="${() => Auth.signOut()}">Sign Out</a>
       </nav>  
