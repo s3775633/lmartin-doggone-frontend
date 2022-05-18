@@ -14211,8 +14211,7 @@ class DogAPI {
 
   async getDog(dogId) {
     // validate
-    if (!dogId) return;
-    console.log(localStorage.accessToken); // fetch the json data
+    if (!dogId) return; // fetch the json data
 
     const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), {
       method: 'GET',
@@ -14226,7 +14225,7 @@ class DogAPI {
       const err = await response.json();
       if (err) console.log(err); // throw error (exit this function)      
 
-      throw new Error('Problem getting user');
+      throw new Error('Problem getting dog');
     } // convert response payload into json - store as data
 
 
@@ -14824,6 +14823,8 @@ var _UserAPI = _interopRequireDefault(require("./../../UserAPI"));
 
 var _MessageAPI = _interopRequireDefault(require("../../MessageAPI"));
 
+var _DogAPI = _interopRequireDefault(require("../../DogAPI"));
+
 var _Toast = _interopRequireDefault(require("../../Toast"));
 
 var _templateObject, _templateObject2, _templateObject3, _templateObject4;
@@ -14836,6 +14837,7 @@ class MessagesView {
   async init() {
     document.title = 'Messages';
     this.myMessages = null;
+    this.dogsList = null;
     this.render();
 
     _Utils.default.pageIntroAnim();
@@ -14850,15 +14852,30 @@ class MessagesView {
       const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
       this.myMessages = await _MessageAPI.default.getMessages();
       this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
-      console.log(this.myMessages);
+      this.myMessages = this.removeDuplicates(this.myMessages, 'dogId');
+      this.dogsList = await _DogAPI.default.getDogs();
       this.render();
     } catch (err) {
       _Toast.default.show(err, 'error');
     }
   }
 
+  getDog(dogId) {
+    for (let x = 0; this.dogsList.length; x++) {
+      if (this.dogsList[x]._id == dogId) {
+        return this.dogsList[x];
+      }
+    }
+  }
+
+  removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+    });
+  }
+
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["  \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["    \n        <p>", "</p>\n        "])), messages.message))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-message-content class=\"message-info\" \n          dogId=\"", "\"\n          dogName=\"", "\"\n          dogImage=\"", "\"\n          message=\"", "\"\n          >\n          </va-message-content>\n          <hr>\n        "])), this.getDog(messages.dogId)._id, this.getDog(messages.dogId).name, this.getDog(messages.dogId).image, messages.message))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14867,7 +14884,87 @@ class MessagesView {
 var _default = new MessagesView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"views/pages/message.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("../../App"));
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../../Router");
+
+var _Auth = _interopRequireDefault(require("../../Auth"));
+
+var _Utils = _interopRequireDefault(require("../../Utils"));
+
+var _UserAPI = _interopRequireDefault(require("../../UserAPI"));
+
+var _MessageAPI = _interopRequireDefault(require("../../MessageAPI"));
+
+var _DogAPI = _interopRequireDefault(require("../../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7, _templateObject8, _templateObject9, _templateObject10;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+class MessageView {
+  async init() {
+    document.title = 'Message';
+    this.myMessages = null;
+    this.dog = null;
+    this.user = null;
+    this.render();
+
+    _Utils.default.pageIntroAnim();
+
+    await this.getDog();
+    await this.getMyMessages();
+  }
+
+  async getMyMessages() {
+    try {
+      // for buyer
+      // for seller
+      const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
+      this.user = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
+      this.myMessages = await _MessageAPI.default.getMessages();
+      this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
+      this.myMessages = this.myMessages.filter(message => message.dogId == this.dog._id);
+      this.render();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  async getDog() {
+    try {
+      this.dog = await _DogAPI.default.getDog(_DogAPI.default.currentDog);
+      this.render();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  render() {
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Message\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <div>\n          ", "\n          </div>\n        </div>\n        "])), this.user.accessLevel == 1 ? (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n            ", "\n          "])), messages.buyer == true ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([" \n              <div class=\"message-received-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message)) : (0, _litHtml.html)(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral([" \n            ", "\n          "])), messages.buyer == true ? (0, _litHtml.html)(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject10 || (_templateObject10 = _taggedTemplateLiteral([" \n              <div class=\"message-received-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message))))));
+    (0, _litHtml.render)(template, _App.default.rootEl);
+  }
+
+}
+
+var _default = new MessageView();
+
+exports.default = _default;
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14903,6 +15000,8 @@ var _editDog = _interopRequireDefault(require("./views/pages/editDog"));
 
 var _messages = _interopRequireDefault(require("./views/pages/messages"));
 
+var _message = _interopRequireDefault(require("./views/pages/message"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import views
@@ -14920,7 +15019,8 @@ const routes = {
   '/favouriteDogs': _favouriteDogs.default,
   '/myDogs': _myDogs.default,
   '/editDog': _editDog.default,
-  '/messages': _messages.default
+  '/messages': _messages.default,
+  '/message': _message.default
 };
 
 class Router {
@@ -14974,7 +15074,7 @@ function anchorRoute(e) {
   const pathname = e.target.closest('a').pathname;
   AppRouter.gotoRoute(pathname);
 }
-},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js","./views/pages/editDog":"views/pages/editDog.js","./views/pages/messages":"views/pages/messages.js"}],"App.js":[function(require,module,exports) {
+},{"./views/pages/home":"views/pages/home.js","./views/pages/404":"views/pages/404.js","./views/pages/signin":"views/pages/signin.js","./views/pages/signup":"views/pages/signup.js","./views/pages/profile":"views/pages/profile.js","./views/pages/editProfile":"views/pages/editProfile.js","./views/pages/guide":"views/pages/guide.js","./views/pages/dogs":"views/pages/dogs.js","./views/pages/newDog":"views/pages/newDog.js","./views/pages/favouriteDogs":"views/pages/favouriteDogs.js","./views/pages/myDogs":"views/pages/myDogs.js","./views/pages/editDog":"views/pages/editDog.js","./views/pages/messages":"views/pages/messages.js","./views/pages/message":"views/pages/message.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17019,6 +17119,71 @@ customElements.define('va-my-dog', class Dog extends _litElement.LitElement {
   }
 
 });
+},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","../Router":"Router.js","../Auth":"Auth.js","../App":"App.js","../UserAPI":"UserAPI.js","../DogAPI":"DogAPI.js","../Toast":"Toast.js"}],"components/va-message-content.js":[function(require,module,exports) {
+"use strict";
+
+var _litElement = require("@polymer/lit-element");
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../Router");
+
+var _Auth = _interopRequireDefault(require("../Auth"));
+
+var _App = _interopRequireDefault(require("../App"));
+
+var _UserAPI = _interopRequireDefault(require("../UserAPI"));
+
+var _DogAPI = _interopRequireDefault(require("../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../Toast"));
+
+var _templateObject;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+customElements.define('va-message-content', class Message extends _litElement.LitElement {
+  constructor() {
+    super();
+  }
+
+  static get properties() {
+    return {
+      dogId: {
+        type: String
+      },
+      dogName: {
+        type: String
+      },
+      dogImage: {
+        type: String
+      },
+      message: {
+        type: String
+      }
+    };
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+  }
+
+  testHandler() {
+    alert("test");
+  }
+
+  setSelectedDog() {
+    _DogAPI.default.currentDog = this.dogId;
+    (0, _Router.gotoRoute)('/message');
+  }
+
+  render() {
+    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral([" \n    <style>\n      .message-info {\n        width: 100%;\n        display: flex;\n        margin-bottom: 15px;\n        margin-top: 15px;\n      }\n      \n      .message-image {\n        height: 200px;\n        width: 200px;\n        border-radius: 500px;\n      }\n      \n      .message-left {\n        width: 25%;\n      }\n      \n      .message-right {\n        margin-top: 55px;\n        width: 75%;\n      }\n    </style>\n    <div class=\"message-info\" @click=", ">\n    <div class=\"message-left\">\n      <img class=\"message-image\" src=\"", "/images/", "\" />\n      </div>\n        <div class=\"message-right\">\n        <h1>", "</h1>\n        <p>", "</p>\n      </div>\n    </div>\n    "])), this.setSelectedDog, _App.default.apiBase, this.dogImage, this.dogName, this.message);
+  }
+
+});
 },{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","../Router":"Router.js","../Auth":"Auth.js","../App":"App.js","../UserAPI":"UserAPI.js","../DogAPI":"DogAPI.js","../Toast":"Toast.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
@@ -17102,6 +17267,8 @@ require("./components/va-dog");
 
 require("./components/va-my-dog");
 
+require("./components/va-message-content");
+
 require("./scss/master.scss");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -17112,7 +17279,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', () => {
   _App.default.init();
 });
-},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./components/va-my-dog":"components/va-my-dog.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./components/va-my-dog":"components/va-my-dog.js","./components/va-message-content":"components/va-message-content.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -17140,7 +17307,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57502" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56752" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

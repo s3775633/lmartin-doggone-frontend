@@ -80,8 +80,6 @@ class DogAPI {
   async getDog(dogId){
     // validate
     if(!dogId) return
-    
-    console.log(localStorage.accessToken)
     // fetch the json data
     const response = await fetch(`${App.apiBase}/dog/${dogId}`, {
       method: 'GET',
@@ -94,7 +92,7 @@ class DogAPI {
       const err = await response.json()
       if(err) console.log(err)
       // throw error (exit this function)      
-      throw new Error('Problem getting user')
+      throw new Error('Problem getting dog')
     }
     
     // convert response payload into json - store as data

@@ -151,6 +151,80 @@ a {
   margin-top: -4em;
 }
 
+.message-info {
+  width: 100%;
+  display: flex;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.message-image {
+  height: 200px;
+  width: 200px;
+  border-radius: 500px;
+}
+
+.message-left {
+  width: 25%;
+}
+
+.message-right {
+  margin-top: 55px;
+  width: 75%;
+}
+
+.message-sent-buyer {
+  background-color: var(--brand-color);
+  color: #ffffff;
+  border-radius: 30px;
+  padding: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  max-width: 800px;
+  float: right;
+  clear: both;
+}
+
+.message-received-seller {
+  background-color: #BE825B;
+  color: #ffffff;
+  border-radius: 30px;
+  padding: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  max-width: 800px;
+  float: left;
+  clear: both;
+}
+
+.message-sent-seller {
+  background-color: var(--brand-color);
+  color: #ffffff;
+  border-radius: 30px;
+  padding: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  max-width: 800px;
+  float: right;
+  clear: both;
+}
+
+.message-received-buyer {
+  background-color: #BE825B;
+  color: #ffffff;
+  border-radius: 30px;
+  padding: 2px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-bottom: 10px;
+  max-width: 800px;
+  float: left;
+  clear: both;
+}
+
 @media all and (max-width: 768px) {
   .signinup-box {
     width: 90%;

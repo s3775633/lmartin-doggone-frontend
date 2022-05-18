@@ -4,6 +4,7 @@ import App from './App.js'
 import './components/va-app-header'
 import './components/va-dog'
 import './components/va-my-dog'
+import './components/va-message-content'
 
 // styles
 import './scss/master.scss'
