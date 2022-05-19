@@ -13832,7 +13832,7 @@ var _Utils = _interopRequireDefault(require("./../../Utils"));
 
 var _moment = _interopRequireDefault(require("moment"));
 
-var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5;
+var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13848,7 +13848,7 @@ class ProfileView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Profile\" user=\"", "\"></va-app-header>\n      <div class=\"page-content calign\">        \n        ", "\n        <h2>", " ", "</h2>\n        <p>", "</p>\n        \n        <p>Updated: ", "</p>\n\n\n        ", "\n\n\n        <sl-button @click=", ">Edit Profile</sl-button>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\" image=", "></sl-avatar>\n        "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? "".concat(_App.default.apiBase, "/images/").concat(_Auth.default.currentUser.avatar) : '') : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n        <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\"></sl-avatar>\n        "]))), _Auth.default.currentUser.firstName, _Auth.default.currentUser.lastName, _Auth.default.currentUser.email, (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), _Auth.default.currentUser.bio ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <h3>Bio</h3>\n          <p>", "</p>\n        "])), _Auth.default.currentUser.bio) : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral([""]))), () => (0, _Router.gotoRoute)('/editProfile'));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .profile-left {\n        width: 30%;\n        margin-top: 200px;\n      }\n      .profile-right {\n        width: 70%;\n        margin-top: 200px;\n      }\n      .profile-right p {\n        font-weight: bold;\n        font-size: 20px;\n      }\n      .profile-container {\n        display: flex;\n        justify-content: cent;\n      }\n      .profile-details {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        margin-bottom: 50px;\n        border: solid 8px #493721;\n      }\n      .profile-bio {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        border: solid 8px #BE825B;\n      }\n    </style>\n      <va-app-header title=\"Profile\" user=\"", "\"></va-app-header>\n      <div class=\"page-content calign\"> \n      <div class=\"profile-container\">   \n        <div class=\"profile-left\" calign>    \n          ", "\n          <h2>", " ", "</h2>\n          <p></p>\n          <sl-button  @click=", ">Edit Profile</sl-button>\n        </div>\n          <div class=\"profile-right\" calign>  \n            <div class=\"profile-details\">\n              <p>Email: ", "</p>\n                ", "\n                <p>Updated: ", "</p>\n              </div>\n              ", "\n          </div>\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n            <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\" image=", "></sl-avatar>\n          "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? "".concat(_App.default.apiBase, "/images/").concat(_Auth.default.currentUser.avatar) : '') : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\"></sl-avatar>\n          "]))), _Auth.default.currentUser.firstName, _Auth.default.currentUser.lastName, () => (0, _Router.gotoRoute)('/editProfile'), _Auth.default.currentUser.email, _Auth.default.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n                  <p>Account Type: Buyer</p>\n                "]))) : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n                  <p>Account Type: Seller</p>\n                "]))), (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), _Auth.default.currentUser.bio ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n              <h3>Bio</h3>\n              <div class=\"profile-bio\">\n              <p>", "</p>\n            "])), _Auth.default.currentUser.bio) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([""]))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -13874,6 +13874,10 @@ var _Toast = _interopRequireDefault(require("./Toast"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class UserAPI {
+  constructor() {
+    this.currentBuyer = {};
+  }
+
   async updateUser(userId, userData) {
     let dataType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'form';
     // validate
@@ -13933,6 +13937,28 @@ class UserAPI {
       if (err) console.log(err); // throw error (exit this function)      
 
       throw new Error('Problem getting user');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  async getUsers() {
+    // fetch the json data
+    const response = await fetch("".concat(_App.default.apiBase, "/user"), {
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      }
+    }); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem getting users');
     } // convert response payload into json - store as data
 
 
@@ -14754,7 +14780,12 @@ class MessageAPI {
         "Authorization": "Bearer ".concat(localStorage.accessToken)
       },
       body: formData
-    }); // if response not ok
+    });
+
+    if (formData.message == '') {
+      return;
+    } // if response not ok
+
 
     if (!response.ok) {
       let message = 'Problem adding message';
@@ -14801,90 +14832,7 @@ class MessageAPI {
 var _default = new MessageAPI();
 
 exports.default = _default;
-},{"./App":"App.js","./Auth":"Auth.js","./Toast":"Toast.js"}],"views/pages/messages.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _App = _interopRequireDefault(require("../../App"));
-
-var _litHtml = require("lit-html");
-
-var _Router = require("../../Router");
-
-var _Auth = _interopRequireDefault(require("../../Auth"));
-
-var _Utils = _interopRequireDefault(require("../../Utils"));
-
-var _UserAPI = _interopRequireDefault(require("./../../UserAPI"));
-
-var _MessageAPI = _interopRequireDefault(require("../../MessageAPI"));
-
-var _DogAPI = _interopRequireDefault(require("../../DogAPI"));
-
-var _Toast = _interopRequireDefault(require("../../Toast"));
-
-var _templateObject, _templateObject2, _templateObject3, _templateObject4;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
-
-class MessagesView {
-  async init() {
-    document.title = 'Messages';
-    this.myMessages = null;
-    this.dogsList = null;
-    this.render();
-
-    _Utils.default.pageIntroAnim();
-
-    await this.getMyMessages();
-  }
-
-  async getMyMessages() {
-    try {
-      // for buyer
-      // for seller
-      const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
-      this.myMessages = await _MessageAPI.default.getMessages();
-      this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
-      this.myMessages = this.removeDuplicates(this.myMessages, 'dogId');
-      this.dogsList = await _DogAPI.default.getDogs();
-      this.render();
-    } catch (err) {
-      _Toast.default.show(err, 'error');
-    }
-  }
-
-  getDog(dogId) {
-    for (let x = 0; this.dogsList.length; x++) {
-      if (this.dogsList[x]._id == dogId) {
-        return this.dogsList[x];
-      }
-    }
-  }
-
-  removeDuplicates(myArr, prop) {
-    return myArr.filter((obj, pos, arr) => {
-      return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
-    });
-  }
-
-  render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-message-content class=\"message-info\" \n          dogId=\"", "\"\n          dogName=\"", "\"\n          dogImage=\"", "\"\n          message=\"", "\"\n          >\n          </va-message-content>\n          <hr>\n        "])), this.getDog(messages.dogId)._id, this.getDog(messages.dogId).name, this.getDog(messages.dogId).image, messages.message))));
-    (0, _litHtml.render)(template, _App.default.rootEl);
-  }
-
-}
-
-var _default = new MessagesView();
-
-exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"views/pages/message.js":[function(require,module,exports) {
+},{"./App":"App.js","./Auth":"Auth.js","./Toast":"Toast.js"}],"views/pages/message.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14922,6 +14870,9 @@ class MessageView {
     this.myMessages = null;
     this.dog = null;
     this.user = null;
+    this.buyerId = null;
+    this.dogId = null;
+    this.buyer = null;
     this.render();
 
     _Utils.default.pageIntroAnim();
@@ -14932,13 +14883,27 @@ class MessageView {
 
   async getMyMessages() {
     try {
-      // for buyer
-      // for seller
       const currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
       this.user = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
-      this.myMessages = await _MessageAPI.default.getMessages();
-      this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
-      this.myMessages = this.myMessages.filter(message => message.dogId == this.dog._id);
+      this.myMessages = await _MessageAPI.default.getMessages(); // for buyer
+
+      if (currentUser.accessLevel == 1) {
+        this.myMessages = this.myMessages.filter(message => message.buyerId == currentUser._id);
+        this.myMessages = this.myMessages.filter(message => message.dogId == this.dog._id);
+      } else {
+        // for seller
+        this.myMessages = this.myMessages.filter(message => message.dogId == this.dog._id);
+      }
+
+      this.buyerId = this.myMessages[0].buyerId;
+      this.dogId = this.myMessages[0].dogId;
+
+      if (currentUser.accessLevel == 1) {
+        this.buyer = true;
+      } else {
+        this.buyer = false;
+      }
+
       this.render();
     } catch (err) {
       _Toast.default.show(err, 'error');
@@ -14954,8 +14919,38 @@ class MessageView {
     }
   }
 
+  async newMessageSubmitHandler(e) {
+    e.preventDefault();
+    const submitBtn = document.querySelector('.submit-btn');
+    const formData = e.detail.formData;
+
+    if (formData.get('message') == '') {
+      return;
+    }
+
+    submitBtn.setAttribute('loading', '');
+
+    try {
+      await _MessageAPI.default.newMessage(formData);
+      submitBtn.removeAttribute('loading'); // reset form
+      // text + textarea fields
+
+      const textInputs = document.querySelectorAll('sl-textarea');
+
+      if (textInputs) {
+        textInputs.forEach(textInput => textInput.value = null);
+      }
+
+      (0, _Router.gotoRoute)('/message');
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+
+      submitBtn.removeAttribute('loading');
+    }
+  }
+
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Message\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n      ", "\n      "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <div>\n          ", "\n          </div>\n        </div>\n        "])), this.user.accessLevel == 1 ? (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n            ", "\n          "])), messages.buyer == true ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([" \n              <div class=\"message-received-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message)) : (0, _litHtml.html)(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral([" \n            ", "\n          "])), messages.buyer == true ? (0, _litHtml.html)(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject10 || (_templateObject10 = _taggedTemplateLiteral([" \n              <div class=\"message-received-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message))))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Message\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      <sl-form class=\"form-signup\" @sl-submit=", ">\n        <sl-input hidden name=\"buyerId\" value=", "></sl-input>\n        <sl-input hidden name=\"dogId\" value=", "></sl-input>\n        <sl-input hidden name=\"buyer\" value=", "></sl-input>\n        <sl-textarea rows=\"6\" name=\"message\" placeholder=\"New Message\"></sl-textarea>\n        <p></p>\n        <sl-button type=\"primary\" class=\"submit-btn dog-submit\" submit>Send Message</sl-button>\n      </sl-form>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n    <va-message-content class=\"message-info\" \n    dogId=\"", "\"\n    dogName=\"", "\"\n    dogImage=\"", "\"\n    >\n    </va-message-content>\n    <hr>\n      ", "\n      "])), this.dog._id, this.dog.name, this.dog.image, this.myMessages.map(messages => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <div>\n          ", "\n          </div>\n        </div>\n        "])), this.user.accessLevel == 1 ? (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n            ", "\n          "])), messages.buyer == true ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([" \n              <div class=\"message-received-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message)) : (0, _litHtml.html)(_templateObject8 || (_templateObject8 = _taggedTemplateLiteral([" \n            ", "\n          "])), messages.buyer != true ? (0, _litHtml.html)(_templateObject9 || (_templateObject9 = _taggedTemplateLiteral([" \n              <div class=\"message-sent-seller\">\n                <p>", "</p>\n              </div>\n            "])), messages.message) : (0, _litHtml.html)(_templateObject10 || (_templateObject10 = _taggedTemplateLiteral([" \n              <div class=\"message-received-buyer\">\n                <p>", "</p>\n              </div>\n            "])), messages.message))))), this.newMessageSubmitHandler, this.buyerId, this.dogId, this.buyer);
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14964,7 +14959,127 @@ class MessageView {
 var _default = new MessageView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"Router.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js"}],"views/pages/messages.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("../../App"));
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../../Router");
+
+var _Auth = _interopRequireDefault(require("../../Auth"));
+
+var _Utils = _interopRequireDefault(require("../../Utils"));
+
+var _UserAPI = _interopRequireDefault(require("./../../UserAPI"));
+
+var _MessageAPI = _interopRequireDefault(require("../../MessageAPI"));
+
+var _DogAPI = _interopRequireDefault(require("../../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _message = _interopRequireDefault(require("./message"));
+
+var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5, _templateObject6, _templateObject7;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+class MessagesView {
+  async init() {
+    document.title = 'Messages';
+    this.myMessages = null;
+    this.dogsList = null;
+    this.userList = null;
+    this.dogMessages = null;
+    this.currentUser = null;
+    this.render();
+
+    _Utils.default.pageIntroAnim();
+
+    await this.getMyMessages();
+  }
+
+  async getMyMessages() {
+    try {
+      this.currentUser = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
+      this.myMessages = await _MessageAPI.default.getMessages();
+      this.userList = await _UserAPI.default.getUsers();
+      console.log(this.currentUser.accessLevel); // for buyer
+
+      if (this.currentUser.accessLevel == 1) {
+        this.myMessages = this.myMessages.filter(message => message.buyerId == this.currentUser._id);
+        this.myMessages = this.removeDuplicates(this.myMessages, 'dogId');
+        this.dogsList = await _DogAPI.default.getDogs();
+      } // for seller
+      else {
+        this.dogsList = await _DogAPI.default.getDogs();
+        this.dogsList = this.dogsList.filter(dog => dog.owner == this.currentUser._id);
+        this.dogMessages = this.getMessages();
+        this.dogMessages = this.removeDuplicates(this.dogMessages, 'buyerId');
+      }
+
+      this.render();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  getDog(dogId) {
+    for (let x = 0; x < this.dogsList.length; x++) {
+      if (this.dogsList[x]._id == dogId) {
+        return this.dogsList[x];
+      }
+    }
+  }
+
+  getBuyer(buyerId) {
+    for (let x = 0; x < this.userList.length; x++) {
+      if (this.userList[x]._id == buyerId) {
+        return this.userList[x];
+      }
+    }
+  }
+
+  getMessages() {
+    const dogMessages = [];
+
+    for (let x = 0; x < this.myMessages.length; x++) {
+      for (let i = 0; i < this.dogsList.length; i++) {
+        if (this.myMessages[x].dogId == this.dogsList[i]._id) {
+          dogMessages.push(this.myMessages[x]);
+        }
+      }
+    }
+
+    return dogMessages;
+  }
+
+  removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+    });
+  }
+
+  render() {
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n    ", "\n      "])), this.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n      ", "\n          "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n        <va-message-content class=\"message-info\" \n            dogId=\"", "\"\n            dogName=\"", "\"\n            dogImage=\"", "\"\n            message=\"", "\"\n            >\n            </va-message-content>\n            <hr>\n          "])), this.getDog(messages.dogId)._id, this.getDog(messages.dogId).name, this.getDog(messages.dogId).image, messages.message))) : (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n      ", "\n        "])), this.dogMessages.map(messages => (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n          <va-message-content-alt class=\"message-info\" \n            dogId=\"", "\"\n            buyerId=\"", "\"\n            buyerName=\"", "\"\n            buyerImage=\"", "\"\n            message=\"", "\"\n          >\n          </va-message-content-alt>\n          <hr>\n          "])), messages.dogId, this.getBuyer(messages.buyerId)._id, this.getBuyer(messages.buyerId).firstName, this.getBuyer(messages.buyerId).image, messages.message)))));
+    (0, _litHtml.render)(template, _App.default.rootEl);
+  }
+
+}
+
+var _default = new MessagesView();
+
+exports.default = _default;
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../MessageAPI":"MessageAPI.js","../../DogAPI":"DogAPI.js","../../Toast":"Toast.js","./message":"views/pages/message.js"}],"Router.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16955,6 +17070,8 @@ var _UserAPI = _interopRequireDefault(require("./../UserAPI"));
 
 var _Toast = _interopRequireDefault(require("./../Toast"));
 
+var _MessageAPI = _interopRequireDefault(require("./../MessageAPI"));
+
 var _templateObject, _templateObject2;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -17006,13 +17123,43 @@ customElements.define('va-dog', class Dog extends _litElement.LitElement {
     alert("test");
   }
 
+  async newMessageSubmitHandler(e) {
+    e.preventDefault();
+    const submitBtn = document.querySelector('.submit-btn');
+    const formData = e.detail.formData;
+
+    if (formData.get('message') == '') {
+      return;
+    }
+
+    submitBtn.setAttribute('loading', '');
+
+    try {
+      await _MessageAPI.default.newMessage(formData);
+      submitBtn.removeAttribute('loading'); // reset form
+      // text + textarea fields
+
+      const textInputs = document.querySelectorAll('sl-textarea');
+
+      if (textInputs) {
+        textInputs.forEach(textInput => textInput.value = null);
+      }
+
+      _Toast.default.show('Message Sent');
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+
+      submitBtn.removeAttribute('loading');
+    }
+  }
+
   moreInfoHandler() {
     // Create sl-dialog
     const dialogEl = document.createElement('sl-dialog'); // add class name
 
     dialogEl.className = 'dog-dialog'; // sl-dialog content
 
-    const dialogContent = (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .wrap {\n            display: flex;\n        }\n        .image {\n            width: 50%;\n        }\n        .image img {\n            width: 100%;\n        }\n        .content {\n            padding-left: 1em;\n        }\n        .gender span,\n        .length span {\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n        </style>\n        <div class=\"wrap\">\n        <div class=\"image\">\n            <img src=\"", "/images/", "\" alt=\"", "\" />\n        </div>\n        <div class=\"content\">\n            <h1>", "</h1>\n            <p>Breed: <span>", "</span></p>\n            <p class=\"size\">Size: <span>", "</span></p>\n            <p class=\"age\">Age: <span>", "</span></p>\n            <p class=\"nature\">Nature: <span>", "</span></p>\n\n            <sl-button @click=", ">\n            <sl-icon slot=\"prefix\" name=\"heart-fill\"></sl-icon>\n            Add to Favourites\n            </sl-button>\n        </div>\n        </div>\n      "])), _App.default.apiBase, this.image, this.name, this.name, this.breed, this.size, this.age, this.nature, this.addFavHandler.bind(this));
+    const dialogContent = (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <style>\n        .wrap {\n            display: flex;\n        }\n        .image {\n            width: 50%;\n        }\n        .image img {\n            width: 100%;\n        }\n        .content {\n            padding-left: 1em;\n            width: 100%;\n        }\n        .gender span,\n        .length span {\n            text-transform: uppercase;\n            font-weight: bold;\n        }\n        </style>\n        <div class=\"wrap\">\n        <div class=\"image\">\n            <img src=\"", "/images/", "\" alt=\"", "\" />\n        </div>\n        <div class=\"content\">\n            <h1>", "</h1>\n            <p>Breed: <span>", "</span></p>\n            <p class=\"size\">Size: <span>", "</span></p>\n            <p class=\"age\">Age: <span>", "</span></p>\n            <p class=\"nature\">Nature: <span>", "</span></p>\n            <sl-form class=\"form-signup\" @sl-submit=", ">\n              <sl-input hidden name=\"buyerId\" value=", "></sl-input>\n              <sl-input hidden name=\"dogId\" value=", "></sl-input>\n              <sl-input hidden name=\"buyer\" value=", "></sl-input>\n              <sl-textarea rows=\"6\" name=\"message\" placeholder=\"New Message\"></sl-textarea>\n              <p></p>\n              <sl-button @click=", ">\n              <sl-icon slot=\"prefix\" name=\"heart-fill\"></sl-icon>\n              Add to Favourites\n              </sl-button>\n              <sl-button type=\"primary\" class=\"submit-btn dog-submit\" submit>Send Message</sl-button>\n            </sl-form>\n        </div>\n        </div>\n      "])), _App.default.apiBase, this.image, this.name, this.name, this.breed, this.size, this.age, this.nature, this.newMessageSubmitHandler, _Auth.default.currentUser._id, this.id, true, this.addFavHandler.bind(this));
     (0, _litHtml.render)(dialogContent, dialogEl); // append to document.body
 
     document.body.append(dialogEl); // show dialog
@@ -17039,7 +17186,7 @@ customElements.define('va-dog', class Dog extends _litElement.LitElement {
   }
 
 });
-},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","./../Router":"Router.js","./../Auth":"Auth.js","./../App":"App.js","./../UserAPI":"UserAPI.js","./../Toast":"Toast.js"}],"components/va-my-dog.js":[function(require,module,exports) {
+},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","./../Router":"Router.js","./../Auth":"Auth.js","./../App":"App.js","./../UserAPI":"UserAPI.js","./../Toast":"Toast.js","./../MessageAPI":"MessageAPI.js"}],"components/va-my-dog.js":[function(require,module,exports) {
 "use strict";
 
 var _litElement = require("@polymer/lit-element");
@@ -17184,6 +17331,79 @@ customElements.define('va-message-content', class Message extends _litElement.Li
   }
 
 });
+},{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","../Router":"Router.js","../Auth":"Auth.js","../App":"App.js","../UserAPI":"UserAPI.js","../DogAPI":"DogAPI.js","../Toast":"Toast.js"}],"components/va-message-content-alt.js":[function(require,module,exports) {
+"use strict";
+
+var _litElement = require("@polymer/lit-element");
+
+var _litHtml = require("lit-html");
+
+var _Router = require("../Router");
+
+var _Auth = _interopRequireDefault(require("../Auth"));
+
+var _App = _interopRequireDefault(require("../App"));
+
+var _UserAPI = _interopRequireDefault(require("../UserAPI"));
+
+var _DogAPI = _interopRequireDefault(require("../DogAPI"));
+
+var _Toast = _interopRequireDefault(require("../Toast"));
+
+var _templateObject, _templateObject2;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+customElements.define('va-message-content-alt', class Message extends _litElement.LitElement {
+  constructor() {
+    super();
+  }
+
+  static get properties() {
+    return {
+      dogId: {
+        type: String
+      },
+      buyerId: {
+        type: String
+      },
+      buyerName: {
+        type: String
+      },
+      buyerImage: {
+        type: String
+      },
+      message: {
+        type: String
+      }
+    };
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+  }
+
+  testHandler() {
+    alert("test");
+  }
+
+  setSelectedBuyer() {
+    _UserAPI.default.currentBuyer = this.buyerId;
+    (0, _Router.gotoRoute)('/message');
+  }
+
+  setSelectedDog() {
+    _DogAPI.default.currentDog = this.dogId;
+    (0, _Router.gotoRoute)('/message');
+  }
+
+  render() {
+    return (0, _litElement.html)(_templateObject || (_templateObject = _taggedTemplateLiteral([" \n    <style>\n      .message-info {\n        width: 100%;\n        display: flex;\n        margin-bottom: 15px;\n        margin-top: 15px;\n      }\n      \n      .message-image {\n        height: 200px;\n        width: 200px;\n        border-radius: 500px;\n      }\n      \n      .message-left {\n        width: 25%;\n      }\n      \n      .message-right {\n        margin-top: 55px;\n        width: 75%;\n      }\n    </style>\n    <div class=\"message-info\" @click=", ">\n    <div class=\"message-left\">\n      ", "\n\n\n      </div>\n        <div class=\"message-right\">\n        <h1>", "</h1>\n        <p>", "</p>\n      </div>\n    </div>\n    "])), this.setSelectedDog, this.buyerImage != '' ? (0, _litElement.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n        <img class=\"message-image\" src=\"", "/images/", "\" />\n      "])), _App.default.apiBase, this.buyerImage) : "\n        <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\"></sl-avatar>\n      ", this.buyerName, this.message);
+  }
+
+});
 },{"@polymer/lit-element":"../node_modules/@polymer/lit-element/lit-element.js","lit-html":"../node_modules/lit-html/lit-html.js","../Router":"Router.js","../Auth":"Auth.js","../App":"App.js","../UserAPI":"UserAPI.js","../DogAPI":"DogAPI.js","../Toast":"Toast.js"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 
@@ -17269,6 +17489,8 @@ require("./components/va-my-dog");
 
 require("./components/va-message-content");
 
+require("./components/va-message-content-alt");
+
 require("./scss/master.scss");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -17279,7 +17501,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', () => {
   _App.default.init();
 });
-},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./components/va-my-dog":"components/va-my-dog.js","./components/va-message-content":"components/va-message-content.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./App.js":"App.js","./components/va-app-header":"components/va-app-header.js","./components/va-dog":"components/va-dog.js","./components/va-my-dog":"components/va-my-dog.js","./components/va-message-content":"components/va-message-content.js","./components/va-message-content-alt":"components/va-message-content-alt.js","./scss/master.scss":"scss/master.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -17307,7 +17529,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56752" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50200" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

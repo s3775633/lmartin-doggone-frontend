@@ -5,6 +5,7 @@ import './components/va-app-header'
 import './components/va-dog'
 import './components/va-my-dog'
 import './components/va-message-content'
+import './components/va-message-content-alt'
 
 // styles
 import './scss/master.scss'

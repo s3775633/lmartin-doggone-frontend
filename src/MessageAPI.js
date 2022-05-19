@@ -11,7 +11,10 @@ class MessageAPI {
       headers: { "Authorization": `Bearer ${localStorage.accessToken}`},
       body: formData
     })
-
+    if(formData.message == '')
+    {
+      return
+    }
     // if response not ok
     if(!response.ok){ 
       let message = 'Problem adding message'

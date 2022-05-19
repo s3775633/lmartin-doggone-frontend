@@ -5,6 +5,7 @@ import Auth from './../Auth'
 import App from './../App'
 import UserAPI from './../UserAPI'
 import Toast from './../Toast'
+import MessageAPI from './../MessageAPI'
 
 customElements.define('va-dog', class Dog extends LitElement {
   constructor(){
@@ -51,6 +52,31 @@ customElements.define('va-dog', class Dog extends LitElement {
     alert("test")
   }
 
+  async newMessageSubmitHandler(e) {
+    e.preventDefault()  
+    const submitBtn = document.querySelector('.submit-btn')
+    const formData = e.detail.formData
+    if(formData.get('message') == '')
+    {
+      return
+    }
+    submitBtn.setAttribute('loading', '')  
+    try{
+      await MessageAPI.newMessage(formData)
+      submitBtn.removeAttribute('loading')
+      // reset form
+      // text + textarea fields
+      const textInputs = document.querySelectorAll('sl-textarea')
+      if(textInputs) {
+        textInputs.forEach(textInput => textInput.value = null)
+      }
+      Toast.show('Message Sent')
+    }catch(err){
+      Toast.show(err, 'error')
+      submitBtn.removeAttribute('loading')
+    }
+  }
+
   moreInfoHandler() {
       // Create sl-dialog
       const dialogEl = document.createElement('sl-dialog')
@@ -70,6 +96,7 @@ customElements.define('va-dog', class Dog extends LitElement {
         }
         .content {
             padding-left: 1em;
+            width: 100%;
         }
         .gender span,
         .length span {
@@ -87,11 +114,18 @@ customElements.define('va-dog', class Dog extends LitElement {
             <p class="size">Size: <span>${this.size}</span></p>
             <p class="age">Age: <span>${this.age}</span></p>
             <p class="nature">Nature: <span>${this.nature}</span></p>
-
-            <sl-button @click=${this.addFavHandler.bind(this)}>
-            <sl-icon slot="prefix" name="heart-fill"></sl-icon>
-            Add to Favourites
-            </sl-button>
+            <sl-form class="form-signup" @sl-submit=${this.newMessageSubmitHandler}>
+              <sl-input hidden name="buyerId" value=${Auth.currentUser._id}></sl-input>
+              <sl-input hidden name="dogId" value=${this.id}></sl-input>
+              <sl-input hidden name="buyer" value=${true}></sl-input>
+              <sl-textarea rows="6" name="message" placeholder="New Message"></sl-textarea>
+              <p></p>
+              <sl-button @click=${this.addFavHandler.bind(this)}>
+              <sl-icon slot="prefix" name="heart-fill"></sl-icon>
+              Add to Favourites
+              </sl-button>
+              <sl-button type="primary" class="submit-btn dog-submit" submit>Send Message</sl-button>
+            </sl-form>
         </div>
         </div>
       `
