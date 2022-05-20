@@ -70,6 +70,12 @@ class DogsView {
       filteredDogs = filteredDogs.filter(dog => dog.energy == energy)
     }
 
+    const searchVal = document.getElementById('search')
+    if(searchVal)
+    {
+      filteredDogs = filteredDogs.filter(dog => dog.name.includes(searchVal.value) || dog.breed.includes(searchVal.value))
+    }
+
     // render
     this.dogs = filteredDogs
     this.render()
@@ -114,10 +120,23 @@ class DogsView {
         margin-left: 30px;
         margin-top: 30px;
         margin-bottom: 30px;
+      }   
+      sl-icon {
+        cursor: pointer;
+      }
+      .search-dog {
+        width: 90%;
+        margin: auto;
+        margin-top: 20px;
       }
     </style>
       <va-app-header title="Dogs" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">  
+      <div class="dog-banner">
+        <div class="input-group">
+          <sl-input id="search" class="search-dog" size="large" type="search" placeholder="Search Dogs"><sl-icon @click=${this.filterDogs.bind(this)} name="search" slot="suffix"></sl-icon></sl-input>
+        </div>
+      </div>
     <div class="filter-menu">
       <sl-select class="dog-select" id="breed" placeholder="Breed" clearable>
         <sl-menu-item data-field="breed" data-match="border collie" value="border collie">border collie</sl-menu-item>

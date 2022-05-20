@@ -115,7 +115,7 @@ class MessagesView {
             dogId="${messages.dogId}"
             buyerId="${this.getBuyer(messages.buyerId)._id}"
             buyerName="${this.getBuyer(messages.buyerId).firstName}"
-            buyerImage="${this.getBuyer(messages.buyerId).image}"
+            buyerImage="${this.getBuyer(messages.buyerId).avatar}"
             message="${messages.message}"
           >
           </va-message-content-alt>

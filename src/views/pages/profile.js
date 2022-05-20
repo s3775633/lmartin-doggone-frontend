@@ -30,7 +30,6 @@ class ProfileView {
       }
       .profile-container {
         display: flex;
-        justify-content: cent;
       }
       .profile-details {
         width: 70%;
@@ -49,19 +48,28 @@ class ProfileView {
         border-radius: 20px;
         border: solid 8px #BE825B;
       }
+      .vertical-line {
+        position: absolute;
+        top: 0;
+        left: 30%;
+        background-color: #c4c4c4;
+        width: 5px;
+        height: 100%;
+      }
     </style>
       <va-app-header title="Profile" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content calign"> 
       <div class="profile-container">   
         <div class="profile-left" calign>    
           ${Auth.currentUser && Auth.currentUser.avatar ? html`
-            <sl-avatar style="--size: 200px; margin-bottom: 1em;" image=${(Auth.currentUser && Auth.currentUser.avatar) ? `${App.apiBase}/images/${Auth.currentUser.avatar}` : ''}></sl-avatar>
+            <sl-avatar style="--size: 300px; margin-bottom: 1em;" image=${(Auth.currentUser && Auth.currentUser.avatar) ? `${App.apiBase}/images/${Auth.currentUser.avatar}` : ''}></sl-avatar>
           `:html`
-          <sl-avatar style="--size: 200px; margin-bottom: 1em;"></sl-avatar>
+          <sl-avatar style="--size: 300px; margin-bottom: 1em;"></sl-avatar>
           `}
           <h2>${Auth.currentUser.firstName} ${Auth.currentUser.lastName}</h2>
           <p></p>
           <sl-button  @click=${()=> gotoRoute('/editProfile')}>Edit Profile</sl-button>
+          <div class="vertical-line"></div>
         </div>
           <div class="profile-right" calign>  
             <div class="profile-details">

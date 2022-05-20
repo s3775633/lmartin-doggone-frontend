@@ -7937,7 +7937,155 @@ class Utils {
 var _default = new Utils();
 
 exports.default = _default;
-},{"gsap":"../node_modules/gsap/index.js"}],"views/pages/home.js":[function(require,module,exports) {
+},{"gsap":"../node_modules/gsap/index.js"}],"DogAPI.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _App = _interopRequireDefault(require("./App"));
+
+var _Auth = _interopRequireDefault(require("./Auth"));
+
+var _Toast = _interopRequireDefault(require("./Toast"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class DogAPI {
+  constructor() {
+    this.currentDog = {};
+  }
+
+  async updateDog(dogId, dogData) {
+    let dataType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'form';
+    // validate
+    if (!dogId || !dogData) return;
+    let responseHeader; // form data
+
+    if (dataType == 'form') {
+      // fetch response header normal (form data)
+      responseHeader = {
+        method: "PUT",
+        headers: {
+          "Authorization": "Bearer ".concat(localStorage.accessToken)
+        },
+        body: dogData
+      }; // json data
+    } else if (dataType == 'json') {
+      responseHeader = {
+        method: "PUT",
+        headers: {
+          "Authorization": "Bearer ".concat(localStorage.accessToken),
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dogData)
+      };
+    } // make fetch request to backend
+
+
+    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), responseHeader); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem updating dog');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  async newDog(formData) {
+    // send fetch request
+    const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
+      method: 'POST',
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      },
+      body: formData
+    }); // if response not ok
+
+    if (!response.ok) {
+      let message = 'Problem adding dog';
+
+      if (response.status == 400) {
+        const err = await response.json();
+        message = err.message;
+      } // throw error (exit this function)      
+
+
+      throw new Error('Problem creating dog');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  async getDog(dogId) {
+    // validate
+    if (!dogId) return; // fetch the json data
+
+    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), {
+      method: 'GET',
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      }
+    }); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem getting dog');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  async getDogs() {
+    // fetch the json data
+    const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
+      headers: {
+        "Authorization": "Bearer ".concat(localStorage.accessToken)
+      }
+    }); // if response not ok
+
+    if (!response.ok) {
+      // console log error
+      const err = await response.json();
+      if (err) console.log(err); // throw error (exit this function)      
+
+      throw new Error('Problem getting dogs');
+    } // convert response payload into json - store as data
+
+
+    const data = await response.json(); // return data
+
+    return data;
+  }
+
+  setCurrentDog(dogID) {
+    this.currentDog = dogID;
+  }
+
+}
+
+var _default = new DogAPI();
+
+exports.default = _default;
+},{"./App":"App.js","./Auth":"Auth.js","./Toast":"Toast.js"}],"views/pages/home.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7955,23 +8103,48 @@ var _Auth = _interopRequireDefault(require("./../../Auth"));
 
 var _Utils = _interopRequireDefault(require("./../../Utils"));
 
-var _templateObject;
+var _Toast = _interopRequireDefault(require("../../Toast"));
+
+var _DogAPI = _interopRequireDefault(require("./../../DogAPI"));
+
+var _templateObject, _templateObject2, _templateObject3, _templateObject4;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 class HomeView {
-  init() {
+  async init() {
     console.log('HomeView.init');
     document.title = 'Home';
+    this.dogs = null;
     this.render();
 
     _Utils.default.pageIntroAnim();
+
+    await this.getDogs();
+    this.render();
+  }
+
+  async getDogs() {
+    try {
+      this.dogs = await _DogAPI.default.getDogs();
+    } catch (err) {
+      _Toast.default.show(err, 'error');
+    }
+  }
+
+  async searchDog() {
+    await this.getDogs();
+    let filteredDogs = this.dogs;
+    const searchVal = document.getElementById('search');
+    filteredDogs = filteredDogs.filter(dog => dog.name.includes(searchVal.value) || dog.breed.includes(searchVal.value));
+    this.dogs = filteredDogs;
+    this.render();
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Home\" user=", "></va-app-header>\n      \n      <div class=\"page-content\">\n        <h1 class=\"anim-in\">Hey ", "</h1>\n\n        <h3>Button example:</h3>\n        <sl-button class=\"anim-in\" @click=", ">View Profile</sl-button>\n        <p>&nbsp;</p>\n        <h3>Link example</h3>\n        <a href=\"/profile\" @click=", ">View Profile</a>\n      </div>\n     \n    "])), JSON.stringify(_Auth.default.currentUser), _Auth.default.currentUser.firstName, () => (0, _Router.gotoRoute)('/profile'), _Router.anchorRoute);
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .home-banner {\n        position: relative;\n        top: -10px;\n        width: 100%;\n        height: 300px;\n        background-image: url('./../../images/banner.png');\n        background-size: cover;\n        background-repeat: no-repeat;\n        padding: 0;\n      }\n      .page-content {\n        padding: 0px;\n      }\n      .dogs-grid {\n        padding: 5em;\n      }\n      .home-search {\n        position: absolute;\n        width: 80%;\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        transform: translate(-50%, -50%);\n      }      \n      .home-search sl-icon {\n        cursor: pointer;\n      }\n      \n    </style>\n      <va-app-header title=\"Home\" user=", "></va-app-header>\n      <div class=\"page-content\">\n        <div class=\"home-banner\">\n          <div class=\"input-group\">\n            <sl-input class=\"home-search\" id=\"search\" size=\"large\" type=\"search\" placeholder=\"Search Dogs\" pill><sl-icon @click=", " name=\"search\" slot=\"suffix\"></sl-icon></sl-input>\n          </div>\n        </div>\n        <div class=\"dogs-grid\">\n        ", "\n        </div>\n      </div>\n     \n    "])), JSON.stringify(_Auth.default.currentUser), this.searchDog.bind(this), this.dogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          ", "\n        "])), this.dogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n            <va-dog class=\"dog-card\" \n              id=\"", "\"\n              name=\"", "\" \n              breed=\"", "\"\n              owner=\"", "\"\n              size=\"", "\"\n              age=\"", "\"\n              nature=\"", "\"\n              Energy=\"", "\"\n              image=\"", "\"\n            >\n            </va-dog>\n          "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -7980,7 +8153,7 @@ class HomeView {
 var _default = new HomeView();
 
 exports.default = _default;
-},{"./../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","./../../Router":"Router.js","./../../Auth":"Auth.js","./../../Utils":"Utils.js"}],"views/pages/404.js":[function(require,module,exports) {
+},{"./../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","./../../Router":"Router.js","./../../Auth":"Auth.js","./../../Utils":"Utils.js","../../Toast":"Toast.js","./../../DogAPI":"DogAPI.js"}],"views/pages/404.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13848,7 +14021,7 @@ class ProfileView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .profile-left {\n        width: 30%;\n        margin-top: 200px;\n      }\n      .profile-right {\n        width: 70%;\n        margin-top: 200px;\n      }\n      .profile-right p {\n        font-weight: bold;\n        font-size: 20px;\n      }\n      .profile-container {\n        display: flex;\n        justify-content: cent;\n      }\n      .profile-details {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        margin-bottom: 50px;\n        border: solid 8px #493721;\n      }\n      .profile-bio {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        border: solid 8px #BE825B;\n      }\n    </style>\n      <va-app-header title=\"Profile\" user=\"", "\"></va-app-header>\n      <div class=\"page-content calign\"> \n      <div class=\"profile-container\">   \n        <div class=\"profile-left\" calign>    \n          ", "\n          <h2>", " ", "</h2>\n          <p></p>\n          <sl-button  @click=", ">Edit Profile</sl-button>\n        </div>\n          <div class=\"profile-right\" calign>  \n            <div class=\"profile-details\">\n              <p>Email: ", "</p>\n                ", "\n                <p>Updated: ", "</p>\n              </div>\n              ", "\n          </div>\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n            <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\" image=", "></sl-avatar>\n          "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? "".concat(_App.default.apiBase, "/images/").concat(_Auth.default.currentUser.avatar) : '') : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <sl-avatar style=\"--size: 200px; margin-bottom: 1em;\"></sl-avatar>\n          "]))), _Auth.default.currentUser.firstName, _Auth.default.currentUser.lastName, () => (0, _Router.gotoRoute)('/editProfile'), _Auth.default.currentUser.email, _Auth.default.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n                  <p>Account Type: Buyer</p>\n                "]))) : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n                  <p>Account Type: Seller</p>\n                "]))), (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), _Auth.default.currentUser.bio ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n              <h3>Bio</h3>\n              <div class=\"profile-bio\">\n              <p>", "</p>\n            "])), _Auth.default.currentUser.bio) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([""]))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .profile-left {\n        width: 30%;\n        margin-top: 200px;\n      }\n      .profile-right {\n        width: 70%;\n        margin-top: 200px;\n      }\n      .profile-right p {\n        font-weight: bold;\n        font-size: 20px;\n      }\n      .profile-container {\n        display: flex;\n      }\n      .profile-details {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        margin-bottom: 50px;\n        border: solid 8px #493721;\n      }\n      .profile-bio {\n        width: 70%;\n        background-color: #ffffff;\n        margin: auto;\n        padding: 20px;\n        border-radius: 20px;\n        border: solid 8px #BE825B;\n      }\n      .vertical-line {\n        position: absolute;\n        top: 0;\n        left: 30%;\n        background-color: #c4c4c4;\n        width: 5px;\n        height: 100%;\n      }\n    </style>\n      <va-app-header title=\"Profile\" user=\"", "\"></va-app-header>\n      <div class=\"page-content calign\"> \n      <div class=\"profile-container\">   \n        <div class=\"profile-left\" calign>    \n          ", "\n          <h2>", " ", "</h2>\n          <p></p>\n          <sl-button  @click=", ">Edit Profile</sl-button>\n          <div class=\"vertical-line\"></div>\n        </div>\n          <div class=\"profile-right\" calign>  \n            <div class=\"profile-details\">\n              <p>Email: ", "</p>\n                ", "\n                <p>Updated: ", "</p>\n              </div>\n              ", "\n          </div>\n        </div>\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n            <sl-avatar style=\"--size: 300px; margin-bottom: 1em;\" image=", "></sl-avatar>\n          "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? "".concat(_App.default.apiBase, "/images/").concat(_Auth.default.currentUser.avatar) : '') : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <sl-avatar style=\"--size: 300px; margin-bottom: 1em;\"></sl-avatar>\n          "]))), _Auth.default.currentUser.firstName, _Auth.default.currentUser.lastName, () => (0, _Router.gotoRoute)('/editProfile'), _Auth.default.currentUser.email, _Auth.default.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n                  <p>Account Type: Buyer</p>\n                "]))) : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n                  <p>Account Type: Seller</p>\n                "]))), (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), _Auth.default.currentUser.bio ? (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral(["\n              <h3>Bio</h3>\n              <div class=\"profile-bio\">\n              <p>", "</p>\n            "])), _Auth.default.currentUser.bio) : (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral([""]))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14047,6 +14220,10 @@ class EditProfileView {
     try {
       this.user = await _UserAPI.default.getUser(_Auth.default.currentUser._id);
       this.render();
+      const fileTag = document.getElementById("file-upload");
+      fileTag.addEventListener("change", event => {
+        this.changeImage();
+      });
     } catch (err) {
       _Toast.default.show(err, 'error');
     }
@@ -14054,7 +14231,9 @@ class EditProfileView {
 
   async updateProfileSubmitHandler(e) {
     e.preventDefault();
+    console.log("hello");
     const formData = e.detail.formData;
+    console.log(formData.get('accessLevel'));
     const submitBtn = document.querySelector('.submit-btn');
     submitBtn.setAttribute('loading', '');
 
@@ -14073,8 +14252,25 @@ class EditProfileView {
     submitBtn.removeAttribute('loading');
   }
 
+  changeImage() {
+    var reader;
+    const input = document.getElementById("file-upload");
+    const preview = document.getElementById("image-preview");
+
+    if (input.files && input.files[0]) {
+      reader = new FileReader();
+
+      reader.onload = function (e) {
+        console.log(preview);
+        preview.setAttribute('image', e.target.result);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Edit Profile\" user=", "></va-app-header>\n      <div class=\"page-content\">        \n        ", "\n      </div>\n    "])), JSON.stringify(_Auth.default.currentUser), this.user == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n          <p>Updated: ", "</p>\n          <sl-form class=\"page-form\" @sl-submit=", ">\n            <div class=\"input-group\">\n              <sl-input type=\"text\" name=\"firstName\" value=\"", "\" placeholder=\"First Name\"></sl-input>\n            </div>\n            <div class=\"input-group\">\n              <sl-input type=\"text\" name=\"lastName\" value=\"", "\" placeholder=\"Last Name\"></sl-input>\n            </div>\n            <div class=\"input-group\">\n              <sl-input type=\"text\" name=\"email\" value=\"", "\" placeholder=\"Email Address\"></sl-input>\n            </div>    \n            <div class=\"input-group\">\n              <sl-textarea name=\"bio\" rows=\"4\" placeholder=\"Bio\" value=\"", "\">", "</sl-textarea>\n            </div>          \n            <div class=\"input-group\">\n              <label>Avatar</label><br>          \n              ", "\n            </div>\n            <sl-button type=\"primary\" class=\"submit-btn\" submit>Update Profile</sl-button>\n          </sl-form>\n        "])), (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), this.updateProfileSubmitHandler.bind(this), this.user.firstName, this.user.lastName, this.user.email, this.user.bio, this.user.bio, this.user.avatar ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n                <sl-avatar image=\"", "/images/", "\"></sl-avatar>\n                <input type=\"file\" name=\"avatar\" />\n              "])), _App.default.apiBase, this.user.avatar) : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n                <input type=\"file\" name=\"avatar\" />\n              "])))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n    .profile-left {\n      width: 30%;\n      margin-top: 200px;\n      text-align: center;\n    }\n    .profile-right {\n      width: 70%;\n      margin-top: 200px;\n    }\n    .profile-right p {\n      font-weight: bold;\n      font-size: 20px;\n    }\n    .profile-container {\n      display: flex;\n    }\n    .profile-details {\n      width: 70%;\n      background-color: #ffffff;\n      margin: auto;\n      padding: 20px;\n      border-radius: 20px;\n      margin-bottom: 50px;\n      border: solid 8px #493721;\n    }\n    .profile-bio {\n      width: 70%;\n      background-color: #ffffff;\n      margin: auto;\n      padding: 20px;\n      border-radius: 20px;\n      border: solid 8px #BE825B;\n    }\n    .vertical-line {\n      position: absolute;\n      top: 0;\n      left: 30%;\n      background-color: #c4c4c4;\n      width: 5px;\n      height: 100%;\n    }\n    .custom-file-upload {\n      width: 200px;\n      height: 40px;\n      font-size: 13px;\n      background-color: #5C753A;\n      border: 1px solid #ccc;\n      display: inline-block;\n      padding: 12px 12px;\n      cursor: pointer;\n      border-radius: 4px;\n      color: #ffffff;\n      font-weight: 500;\n      text-align: center;\n    }\n    input[type=\"file\"] {\n      display: none;\n    }\n    .submit-btn {\n      width: 300px;\n    }\n    </style>\n      <va-app-header title=\"Edit Profile\" user=", "></va-app-header>\n      <div class=\"page-content\">  \n      <div class=\"vertical-line\"></div> \n      <sl-form @sl-submit=", ">      \n        ", "\n      </div>\n    "])), JSON.stringify(_Auth.default.currentUser), this.updateProfileSubmitHandler.bind(this), this.user == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n          <sl-spinner></sl-spinner>\n        "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n        <div class=\"profile-container\">   \n          <div class=\"profile-left\" calign> \n          ", "\n            <div class=\"input-group\" class=\"image-upload\" style=\"margin-bottom: 2em;\">\n              <label class=\"custom-file-upload\">Upload Image\n                <input class=\"upload-button\" id=\"file-upload\" type=\"file\" name=\"avatar\"/>       \n              </label>       \n            </div>\n            <sl-button type=\"primary\" class=\"submit-btn\" submit>Update Profile</sl-button>    \n          </div>\n          <div class=\"profile-right\" calign>  \n            <div class=\"profile-details\">\n                <div class=\"input-group\">\n                  <sl-input type=\"text\" hidden name=\"accessLevel\" value=\"", "\"></sl-input>\n                </div>\n                <div class=\"input-group\">\n                  <sl-input type=\"text\" name=\"firstName\" value=\"", "\" placeholder=\"First Name\"></sl-input>\n                </div>\n                <div class=\"input-group\">\n                  <sl-input type=\"text\" name=\"lastName\" value=\"", "\" placeholder=\"Last Name\"></sl-input>\n                </div>\n                <div class=\"input-group\">\n                  <sl-input type=\"text\" name=\"email\" value=\"", "\" placeholder=\"Email Address\"></sl-input>\n                </div>  \n                <p>Updated: ", "</p> \n                </div> \n                <div class=\"profile-bio\">\n                  <div class=\"input-group\">\n                    <sl-textarea name=\"bio\" rows=\"4\" placeholder=\"Bio\" value=\"", "\">", "</sl-textarea>\n                  </div>  \n              </div>    \n          </div>\n\n        </div>\n        </sl-form>\n        "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n          <sl-avatar id=\"image-preview\" style=\"--size: 300px; margin-bottom: 1em;\" image=", "></sl-avatar>\n            "])), _Auth.default.currentUser && _Auth.default.currentUser.avatar ? "".concat(_App.default.apiBase, "/images/").concat(_Auth.default.currentUser.avatar) : '') : (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n            <sl-avatar id=\"image-preview\" style=\"--size: 300px; margin-bottom: 1em;\"></sl-avatar>\n            "]))), this.user.accessLevel, this.user.firstName, this.user.lastName, this.user.email, (0, _moment.default)(_Auth.default.currentUser.updatedAt).format('MMMM Do YYYY, @ h:mm a'), this.user.bio, this.user.bio));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -14143,155 +14339,7 @@ class GuideView {
 var _default = new GuideView();
 
 exports.default = _default;
-},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../Toast":"Toast.js"}],"DogAPI.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _App = _interopRequireDefault(require("./App"));
-
-var _Auth = _interopRequireDefault(require("./Auth"));
-
-var _Toast = _interopRequireDefault(require("./Toast"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class DogAPI {
-  constructor() {
-    this.currentDog = {};
-  }
-
-  async updateDog(dogId, dogData) {
-    let dataType = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'form';
-    // validate
-    if (!dogId || !dogData) return;
-    let responseHeader; // form data
-
-    if (dataType == 'form') {
-      // fetch response header normal (form data)
-      responseHeader = {
-        method: "PUT",
-        headers: {
-          "Authorization": "Bearer ".concat(localStorage.accessToken)
-        },
-        body: dogData
-      }; // json data
-    } else if (dataType == 'json') {
-      responseHeader = {
-        method: "PUT",
-        headers: {
-          "Authorization": "Bearer ".concat(localStorage.accessToken),
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dogData)
-      };
-    } // make fetch request to backend
-
-
-    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), responseHeader); // if response not ok
-
-    if (!response.ok) {
-      // console log error
-      const err = await response.json();
-      if (err) console.log(err); // throw error (exit this function)      
-
-      throw new Error('Problem updating dog');
-    } // convert response payload into json - store as data
-
-
-    const data = await response.json(); // return data
-
-    return data;
-  }
-
-  async newDog(formData) {
-    // send fetch request
-    const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
-      method: 'POST',
-      headers: {
-        "Authorization": "Bearer ".concat(localStorage.accessToken)
-      },
-      body: formData
-    }); // if response not ok
-
-    if (!response.ok) {
-      let message = 'Problem adding dog';
-
-      if (response.status == 400) {
-        const err = await response.json();
-        message = err.message;
-      } // throw error (exit this function)      
-
-
-      throw new Error('Problem creating dog');
-    } // convert response payload into json - store as data
-
-
-    const data = await response.json(); // return data
-
-    return data;
-  }
-
-  async getDog(dogId) {
-    // validate
-    if (!dogId) return; // fetch the json data
-
-    const response = await fetch("".concat(_App.default.apiBase, "/dog/").concat(dogId), {
-      method: 'GET',
-      headers: {
-        "Authorization": "Bearer ".concat(localStorage.accessToken)
-      }
-    }); // if response not ok
-
-    if (!response.ok) {
-      // console log error
-      const err = await response.json();
-      if (err) console.log(err); // throw error (exit this function)      
-
-      throw new Error('Problem getting dog');
-    } // convert response payload into json - store as data
-
-
-    const data = await response.json(); // return data
-
-    return data;
-  }
-
-  async getDogs() {
-    // fetch the json data
-    const response = await fetch("".concat(_App.default.apiBase, "/dog"), {
-      headers: {
-        "Authorization": "Bearer ".concat(localStorage.accessToken)
-      }
-    }); // if response not ok
-
-    if (!response.ok) {
-      // console log error
-      const err = await response.json();
-      if (err) console.log(err); // throw error (exit this function)      
-
-      throw new Error('Problem getting dogs');
-    } // convert response payload into json - store as data
-
-
-    const data = await response.json(); // return data
-
-    return data;
-  }
-
-  setCurrentDog(dogID) {
-    this.currentDog = dogID;
-  }
-
-}
-
-var _default = new DogAPI();
-
-exports.default = _default;
-},{"./App":"App.js","./Auth":"Auth.js","./Toast":"Toast.js"}],"views/pages/dogs.js":[function(require,module,exports) {
+},{"../../App":"App.js","lit-html":"../node_modules/lit-html/lit-html.js","../../Router":"Router.js","../../Auth":"Auth.js","../../Utils":"Utils.js","./../../UserAPI":"UserAPI.js","../../Toast":"Toast.js"}],"views/pages/dogs.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14379,6 +14427,12 @@ class DogsView {
 
     if (energy) {
       filteredDogs = filteredDogs.filter(dog => dog.energy == energy);
+    }
+
+    const searchVal = document.getElementById('search');
+
+    if (searchVal) {
+      filteredDogs = filteredDogs.filter(dog => dog.name.includes(searchVal.value) || dog.breed.includes(searchVal.value));
     } // render
 
 
@@ -14408,7 +14462,7 @@ class DogsView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .filter-menu {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center\n      }\n      .dog-select {\n        width: 13%;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }\n      .reset-button {\n        float: right;\n        margin-left: 30px;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }\n    </style>\n      <va-app-header title=\"Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">  \n    <div class=\"filter-menu\">\n      <sl-select class=\"dog-select\" id=\"breed\" placeholder=\"Breed\" clearable>\n        <sl-menu-item data-field=\"breed\" data-match=\"border collie\" value=\"border collie\">border collie</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"Dashhound\" value=\"Dashhound\">dashhound</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"great dane\" value=\"great dane\">great dane</sl-menu-item>\n      </sl-select>\n        <sl-select class=\"dog-select\" id=\"sex\" placeholder=\"Sex\" clearable>\n        <sl-menu-item data-field=\"sex\" data-match=\"male\" value=\"male\">male</sl-menu-item>\n        <sl-menu-item data-field=\"sex\" data-match=\"female\" value=\"female\">female</sl-menu-item>\n      </sl-select>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"age\" placeholder=\"Age\" clearable>\n        <sl-menu-item data-field=\"age\" data-match=\"0-5\" value=\"0-5\">0-5</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"6-10\" value=\"6-10\">6-10</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"11-15\" value=\"11-15\">11-15</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"16+\" value=\"16+\">16+</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"size\" placeholder=\"Size\" clearable>\n        <sl-menu-item data-field=\"size\" data-match=\"small\" value=\"small\">small</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"large\" value=\"large\">large</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"nature\" placeholder=\"Nature\" clearable>\n        <sl-menu-item data-field=\"nature\" data-match=\"loving\" value=\"loving\">loving</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"playful\" value=\"playful\">playful</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"protective\" value=\"protective\">protective</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"energy\" placeholder=\"Energy\" clearable>\n        <sl-menu-item data-field=\"energy\" data-match=\"low\" value=\"low\">low</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"high\" value=\"high\">high</sl-menu-item>\n      </sl-select>\n      <sl-button class=\"reset-button\" size=\"medium\" @click=", ">Clear Filters</sl-button>\n    </div>\n    <div class=\"dogs-grid\">\n    ", "\n    </div>\n        \n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.clearFilters.bind(this), this.dogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>\n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n      ", "\n    "])), this.dogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-dog class=\"dog-card\" \n          id=\"", "\"\n          name=\"", "\" \n          breed=\"", "\"\n          owner=\"", "\"\n          size=\"", "\"\n          age=\"", "\"\n          nature=\"", "\"\n          Energy=\"", "\"\n          image=\"", "\"\n        >\n        </va-dog>\n      "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n    <style>\n      .filter-menu {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center\n      }\n      .dog-select {\n        width: 13%;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }\n      .reset-button {\n        float: right;\n        margin-left: 30px;\n        margin-top: 30px;\n        margin-bottom: 30px;\n      }   \n      sl-icon {\n        cursor: pointer;\n      }\n      .search-dog {\n        width: 90%;\n        margin: auto;\n        margin-top: 20px;\n      }\n    </style>\n      <va-app-header title=\"Dogs\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">  \n      <div class=\"dog-banner\">\n        <div class=\"input-group\">\n          <sl-input id=\"search\" class=\"search-dog\" size=\"large\" type=\"search\" placeholder=\"Search Dogs\"><sl-icon @click=", " name=\"search\" slot=\"suffix\"></sl-icon></sl-input>\n        </div>\n      </div>\n    <div class=\"filter-menu\">\n      <sl-select class=\"dog-select\" id=\"breed\" placeholder=\"Breed\" clearable>\n        <sl-menu-item data-field=\"breed\" data-match=\"border collie\" value=\"border collie\">border collie</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"Dashhound\" value=\"Dashhound\">dashhound</sl-menu-item>\n        <sl-menu-item data-field=\"breed\" data-match=\"great dane\" value=\"great dane\">great dane</sl-menu-item>\n      </sl-select>\n        <sl-select class=\"dog-select\" id=\"sex\" placeholder=\"Sex\" clearable>\n        <sl-menu-item data-field=\"sex\" data-match=\"male\" value=\"male\">male</sl-menu-item>\n        <sl-menu-item data-field=\"sex\" data-match=\"female\" value=\"female\">female</sl-menu-item>\n      </sl-select>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"age\" placeholder=\"Age\" clearable>\n        <sl-menu-item data-field=\"age\" data-match=\"0-5\" value=\"0-5\">0-5</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"6-10\" value=\"6-10\">6-10</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"11-15\" value=\"11-15\">11-15</sl-menu-item>\n        <sl-menu-item data-field=\"age\" data-match=\"16+\" value=\"16+\">16+</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"size\" placeholder=\"Size\" clearable>\n        <sl-menu-item data-field=\"size\" data-match=\"small\" value=\"small\">small</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"size\" data-match=\"large\" value=\"large\">large</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"nature\" placeholder=\"Nature\" clearable>\n        <sl-menu-item data-field=\"nature\" data-match=\"loving\" value=\"loving\">loving</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"playful\" value=\"playful\">playful</sl-menu-item>\n        <sl-menu-item data-field=\"nature\" data-match=\"protective\" value=\"protective\">protective</sl-menu-item>\n      </sl-select>\n      <sl-select class=\"dog-select\" id=\"energy\" placeholder=\"Energy\" clearable>\n        <sl-menu-item data-field=\"energy\" data-match=\"low\" value=\"low\">low</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"medium\" value=\"medium\">medium</sl-menu-item>\n        <sl-menu-item data-field=\"energy\" data-match=\"high\" value=\"high\">high</sl-menu-item>\n      </sl-select>\n      <sl-button class=\"reset-button\" size=\"medium\" @click=", ">Clear Filters</sl-button>\n    </div>\n    <div class=\"dogs-grid\">\n    ", "\n    </div>\n        \n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.filterDogs.bind(this), this.clearFilters.bind(this), this.dogs == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>\n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\n      ", "\n    "])), this.dogs.map(dog => (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n        <va-dog class=\"dog-card\" \n          id=\"", "\"\n          name=\"", "\" \n          breed=\"", "\"\n          owner=\"", "\"\n          size=\"", "\"\n          age=\"", "\"\n          nature=\"", "\"\n          Energy=\"", "\"\n          image=\"", "\"\n        >\n        </va-dog>\n      "])), dog._id, dog.name, dog.breed, JSON.stringify(dog.owner), dog.size, dog.age, dog.nature, dog.energy, dog.image))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -15070,7 +15124,7 @@ class MessagesView {
   }
 
   render() {
-    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n    ", "\n      "])), this.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n      ", "\n          "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n        <va-message-content class=\"message-info\" \n            dogId=\"", "\"\n            dogName=\"", "\"\n            dogImage=\"", "\"\n            message=\"", "\"\n            >\n            </va-message-content>\n            <hr>\n          "])), this.getDog(messages.dogId)._id, this.getDog(messages.dogId).name, this.getDog(messages.dogId).image, messages.message))) : (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n      ", "\n        "])), this.dogMessages.map(messages => (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n          <va-message-content-alt class=\"message-info\" \n            dogId=\"", "\"\n            buyerId=\"", "\"\n            buyerName=\"", "\"\n            buyerImage=\"", "\"\n            message=\"", "\"\n          >\n          </va-message-content-alt>\n          <hr>\n          "])), messages.dogId, this.getBuyer(messages.buyerId)._id, this.getBuyer(messages.buyerId).firstName, this.getBuyer(messages.buyerId).image, messages.message)))));
+    const template = (0, _litHtml.html)(_templateObject || (_templateObject = _taggedTemplateLiteral(["\n      <va-app-header title=\"Messages\" user=\"", "\"></va-app-header>\n      <div class=\"page-content\">   \n      ", "\n      </div>      \n    "])), JSON.stringify(_Auth.default.currentUser), this.myMessages == null ? (0, _litHtml.html)(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["\n      <sl-spinner></sl-spinner>   \n    "]))) : (0, _litHtml.html)(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral([" \n    ", "\n      "])), this.currentUser.accessLevel == 1 ? (0, _litHtml.html)(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["\n      ", "\n          "])), this.myMessages.map(messages => (0, _litHtml.html)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["\n        <va-message-content class=\"message-info\" \n            dogId=\"", "\"\n            dogName=\"", "\"\n            dogImage=\"", "\"\n            message=\"", "\"\n            >\n            </va-message-content>\n            <hr>\n          "])), this.getDog(messages.dogId)._id, this.getDog(messages.dogId).name, this.getDog(messages.dogId).image, messages.message))) : (0, _litHtml.html)(_templateObject6 || (_templateObject6 = _taggedTemplateLiteral([" \n      ", "\n        "])), this.dogMessages.map(messages => (0, _litHtml.html)(_templateObject7 || (_templateObject7 = _taggedTemplateLiteral(["\n          <va-message-content-alt class=\"message-info\" \n            dogId=\"", "\"\n            buyerId=\"", "\"\n            buyerName=\"", "\"\n            buyerImage=\"", "\"\n            message=\"", "\"\n          >\n          </va-message-content-alt>\n          <hr>\n          "])), messages.dogId, this.getBuyer(messages.buyerId)._id, this.getBuyer(messages.buyerId).firstName, this.getBuyer(messages.buyerId).avatar, messages.message)))));
     (0, _litHtml.render)(template, _App.default.rootEl);
   }
 
@@ -17529,7 +17583,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50200" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63327" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
