@@ -15,6 +15,7 @@ class HomeView {
     Utils.pageIntroAnim()   
     await this.getDogs() 
     this.render()
+    this.randTileColour()
   }
 
   async getDogs() {
@@ -34,6 +35,17 @@ class HomeView {
 
     this.dogs = filteredDogs
     this.render()
+  }
+
+  randTileColour()
+  {
+    const tiles = document.querySelectorAll('va-dog')
+    const colours = ['#3F7294', '#5C753A', '#96785C', '#BE825B', '#493721', '#EDC895']
+    console.log(tiles)
+    for(let x = 0; x < tiles.length; x++)
+    {
+      tiles[x].style.backgroundColor = colours[Math.floor(Math.random() * 6)];
+    }
   }
 
   render(){
@@ -66,7 +78,21 @@ class HomeView {
       .home-search sl-icon {
         cursor: pointer;
       }
-      
+      @media only screen and (max-width: 1600px) {
+        .dogs-grid {
+          padding: 3em;
+        }
+      }
+      @media only screen and (max-width: 1100px) {
+        .dogs-grid {
+          padding: 2em;
+        }
+      }
+      @media only screen and (max-width: 600px) {
+        .dogs-grid {
+          padding: 1em;
+        }
+      }
     </style>
       <va-app-header title="Home" user=${JSON.stringify(Auth.currentUser)}></va-app-header>
       <div class="page-content">

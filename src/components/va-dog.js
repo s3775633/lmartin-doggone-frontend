@@ -93,6 +93,7 @@ customElements.define('va-dog', class Dog extends LitElement {
         }
         .image img {
             width: 100%;
+            height: 400px;
         }
         .content {
             padding-left: 1em;
@@ -102,6 +103,23 @@ customElements.define('va-dog', class Dog extends LitElement {
         .length span {
             text-transform: uppercase;
             font-weight: bold;
+        }
+        @media only screen and (max-width: 1100px) {
+          .image {
+            margin-top: 30px;
+            width: 100%;
+          }
+          .wrap {
+            display: block;
+          }
+          .content {
+            padding-left: 0;
+          }
+          .image img {
+            height: none;
+          }
+        }
+        @media only screen and (max-width: 600px) {
         }
         </style>
         <div class="wrap">
@@ -146,8 +164,25 @@ customElements.define('va-dog', class Dog extends LitElement {
 
   async addFavHandler(){    
     try {
-      await UserAPI.addFavDog(this.id)
-      Toast.show('Dog added to favourites')
+      const currentUser = Auth.currentUser
+      console.log(currentUser.favouriteDogs)
+      let favCheck = false
+      for(let x = 0; x < currentUser.favouriteDogs.length; x++)
+      {
+        if(this.id == currentUser.favouriteDogs[x])
+        {
+
+          favCheck = true
+        }
+      }
+      if(!favCheck)
+      {
+        await UserAPI.addFavDog(this.id)
+        Toast.show('Dog added to favourites')
+      }
+      else{
+        Toast.show('Dog is already in favourites')
+      }
     }catch(err){
       Toast.show(err, 'error')
     }
@@ -167,19 +202,43 @@ customElements.define('va-dog', class Dog extends LitElement {
         }
         img {
             width: 100%;
-            height: 350px;
+            height: 250px;
         }
         .card-size {
           width: 100%;
         }
+        sl-card {
+          --sl-color-white: none;
+          width: 100%;
+          color: #ffffff;
+        }
+        .info-button {
+          height: 40px;
+          background-color: #ffffff;
+          width: 100px;
+          border: none;
+          border-radius: 4px;
+          box-shadow: 1px 2px 9px 0px #000000;
+          cursor: pointer;
+        }
+        .info-button:hover {
+          background-color: #C4C4C4;
+        }
+        .dog-heading {
+          margin: 0;
+        }
+        .dogs-grid {
+          display: flex;
+          flex-wrap: wrap;
+          > .dog-card {
+            width: calc(25% - 1em);
+            margin: 0.5em;
+          }
+        }
     </style>  
-    <sl-card class="card-size">
-        <img slot="image" src="${App.apiBase}/images/${this.image}" />
-        <h2>${this.name}</h2>
-        <h3>${this.breed}</h3>
-        <p class="owner">${this.owner.firstName} ${this.owner.lastName}</p>
-        <sl-button @click=${this.moreInfoHandler}>More Info</sl-button>
-        <sl-icon-button name="heart-fill" label="Add to favourites" @click=${this.addFavHandler.bind(this)}></sl-icon-button>
+    <sl-card @click=${this.moreInfoHandler} class="card-size">
+        <img class="listing-image" slot="image" src="${App.apiBase}/images/${this.image}" />
+        <h2 class="dog-heading">${this.name}</h2>
         </sl-card>
     `
   }

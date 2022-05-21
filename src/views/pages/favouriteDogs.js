@@ -8,22 +8,35 @@ import UserAPI from './../../UserAPI'
 
 
 class FavouriteDogsView {
-  init(){
+  async init(){
     document.title = 'Favourite Dogs'  
     this.favDogs = null  
     this.render()    
     Utils.pageIntroAnim()
-    this.getFavDogs()
+    await this.getFavDogs()
+    this.render()
+    this.randTileColour()
   }
 
   async getFavDogs(){
     try {
       const currentUser = await UserAPI.getUser(Auth.currentUser._id)
       this.favDogs = currentUser.favouriteDogs
-      console.log(this.favDogs)
       this.render()
     }catch(err){
       Toast.show(err, 'error')
+    }
+  }
+
+  randTileColour()
+  {
+    const tiles = document.querySelectorAll('va-dog')
+    const colours = ['#3F7294', '#5C753A', '#96785C', '#BE825B', '#493721', '#EDC895']
+    console.log(tiles)
+    for(let x = 0; x < tiles.length; x++)
+    {
+      console.log(tiles[x])
+      tiles[x].style.backgroundColor = colours[Math.floor(Math.random() * 6)];
     }
   }
 

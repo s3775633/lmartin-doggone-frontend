@@ -166,6 +166,11 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
         ${(this.user.accessLevel == 2) ? html`
           <a href="/newDog" @click="${anchorRoute}">Add Dog</a>   
         ` : ''}  
+        ${(this.user.accessLevel == 1) ? html`
+          <a href="/dogs" @click="${anchorRoute}">Listings</a> 
+          <a href="/favouriteDogs" @click="${anchorRoute}">Watching</a> 
+        ` : ''}  
+        <a href="/messages" @click="${anchorRoute}">Messages</a> 
         <sl-dropdown>
           <a slot="trigger" href="#" @click="${(e) => e.preventDefault()}">
             <sl-avatar style="--size: 24px;" image=${(this.user && this.user.avatar) ? `${App.apiBase}/images/${this.user.avatar}` : ''}></sl-avatar> ${this.user && this.user.firstName}

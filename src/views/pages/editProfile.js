@@ -131,6 +131,30 @@ class EditProfileView {
     .submit-btn {
       width: 300px;
     }
+    @media only screen and (max-width: 1100px) {
+      .vertical-line {
+        display: none;
+      }
+      .profile-left {
+        width: 100%;
+        margin-top: 50px;
+      }
+      .profile-right {
+        width: 100%;
+        margin-top: 30px;
+      }
+      .profile-container {
+        display: block;
+      }
+    }
+    @media only screen and (max-width: 600px) {
+      .profile-details {
+        width: 100%;
+      }
+      .profile-bio {
+        width: 100%;
+      }
+    }
     </style>
       <va-app-header title="Edit Profile" user=${JSON.stringify(Auth.currentUser)}></va-app-header>
       <div class="page-content">  

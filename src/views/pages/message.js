@@ -53,6 +53,7 @@ class MessageView {
 
   async getDog(){
     try {
+      console.log(DogAPI.currentDog)
       this.dog = await DogAPI.getDog(DogAPI.currentDog) 
       this.render()
     }catch(err){
@@ -71,6 +72,7 @@ class MessageView {
     submitBtn.setAttribute('loading', '')  
     try{
       await MessageAPI.newMessage(formData)
+      console.log("new message")
       submitBtn.removeAttribute('loading')
       // reset form
       // text + textarea fields
@@ -78,7 +80,7 @@ class MessageView {
       if(textInputs) {
         textInputs.forEach(textInput => textInput.value = null)
       }
-      gotoRoute('/message')
+      this.getMyMessages()
     }catch(err){
       Toast.show(err, 'error')
       submitBtn.removeAttribute('loading')
@@ -87,6 +89,11 @@ class MessageView {
 
   render(){
     const template = html`
+    <style>
+      sl-button {
+        margin-bottom: 20px;
+      }
+    </style>
       <va-app-header title="Message" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">   
       ${(this.myMessages == null) ? html`
@@ -128,7 +135,7 @@ class MessageView {
         `)
         }
       `}
-      <sl-form class="form-signup" @sl-submit=${this.newMessageSubmitHandler}>
+      <sl-form class="form-signup" @sl-submit=${this.newMessageSubmitHandler.bind(this)}>
         <sl-input hidden name="buyerId" value=${this.buyerId}></sl-input>
         <sl-input hidden name="dogId" value=${this.dogId}></sl-input>
         <sl-input hidden name="buyer" value=${this.buyer}></sl-input>

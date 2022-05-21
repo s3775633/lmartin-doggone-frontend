@@ -26,8 +26,65 @@ class SignUpView{
   }
 
   render(){
-    const template = html`      
-      <div class="page-content page-centered">      
+    const template = html` 
+    <style>
+    .login-container {
+      display: flex;
+      width: 60%;
+      height: 70%;
+    }
+    .left-panel {
+      position: relative;
+      width: 55%;
+      height: 100%;
+      background-color: #ffffff;
+    }
+    .right-panel {
+      position: relative;
+      width: 45%;
+      height: 100%;
+      background-color: var(--brand-color);
+    }
+    .signinup-box {
+      max-width: none;
+      position: absolute;
+      width: 80%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .login-image {
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+    }
+    .right-heading {
+      color: #ffffff;
+      font-size: 50px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .right-subHeading {
+      color: #ffffff;
+      text-align: center;
+    }
+    @media only screen and (max-width: 1100px) {
+      .right-panel {
+        display: none;
+      }
+      .left-panel {
+        width: 100%;
+      }
+    }
+    @media only screen and (max-width: 600px) {
+      .login-container {
+        width: 100%;
+      }
+    }
+    </style>     
+      <div class="page-content page-centered">   
+      <div class="login-container">
+      <div class="left-panel">   
         <div class="signinup-box">
         <img class="signinup-logo" src="/images/logo.svg">
           <h1>Sign Up</h1>
@@ -54,6 +111,13 @@ class SignUpView{
           </sl-form>
           <p>Have an account? <a href="/signin" @click=${anchorRoute}>Sign In</a></p>
         </div>
+      </div>
+      <div class="right-panel">
+      <h1 class="right-heading">Dog Gone</h1>
+      <h2 class="right-subHeading">Helping you find your new best friend</h2>
+      <img class="login-image" src="/images/register-dog.png">
+    </div>
+      </div>
       </div>
     `
     render(template, App.rootEl)

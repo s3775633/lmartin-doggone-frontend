@@ -71,18 +71,48 @@ customElements.define('va-my-dog', class Dog extends LitElement {
         }
         img {
             width: 100%;
-            height: 350px;
+            height: 250px;
         }
         .card-size {
           width: 100%;
         }
+        sl-card {
+          --sl-color-white: none;
+          width: 100%;
+          color: #ffffff;
+        }
+        .info-button {
+          height: 40px;
+          background-color: #ffffff;
+          width: 100px;
+          border: none;
+          border-radius: 4px;
+          box-shadow: 1px 2px 9px 0px #000000;
+          cursor: pointer;
+        }
+        .info-button:hover {
+          background-color: #C4C4C4;
+        }
+        .dog-heading {
+          margin: 0;
+        }
+        .dogs-grid {
+          display: flex;
+          flex-wrap: wrap;
+          > .dog-card {
+            width: calc(25% - 1em);
+            margin: 0.5em;
+          }
+        }
+        .dog-tile-container {
+          display: flex;
+        }
     </style>  
-    <sl-card class="card-size">
+    <sl-card @click=${this.setSelectedDog} class="card-size">
         <img slot="image" src="${App.apiBase}/images/${this.image}" />
-        <h2>${this.name}</h2>
-        <h3>${this.breed}</h3>
-        <p class="owner">${this.owner.firstName} ${this.owner.lastName}</p>
-        <sl-button @click=${this.setSelectedDog}>Edit</sl-button>
+        <div class="dog-tile-container">
+           <h2 class="dog-heading">${this.name}</h2>
+        </div>
         </sl-card>
     `
   }

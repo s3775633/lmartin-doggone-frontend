@@ -18,6 +18,7 @@ class DogsView {
       this.filterDogs();
     }));
     await this.getDogs()
+    this.randTileColour()
   }
 
   async filterDogs()
@@ -79,6 +80,7 @@ class DogsView {
     // render
     this.dogs = filteredDogs
     this.render()
+    this.randTileColour()
   }
 
   clearFilterButtons(){
@@ -99,6 +101,17 @@ class DogsView {
       this.render()
     }catch(err){
       Toast.show(err, 'error')
+    }
+  }
+
+  randTileColour()
+  {
+    const tiles = document.querySelectorAll('va-dog')
+    const colours = ['#3F7294', '#5C753A', '#96785C', '#BE825B', '#493721', '#EDC895']
+    console.log(tiles)
+    for(let x = 0; x < tiles.length; x++)
+    {
+      tiles[x].style.backgroundColor = colours[Math.floor(Math.random() * 6)];
     }
   }
 
@@ -129,12 +142,26 @@ class DogsView {
         margin: auto;
         margin-top: 20px;
       }
+      @media only screen and (max-width: 1100px) {
+
+      }
+      @media only screen and (max-width: 800px) {
+        .dog-select {
+          width: 80%;
+          margin-top: 0px;
+          margin-bottom: 10px;
+        }
+        .reset-button {
+          margin: auto;
+          width: 80%;
+        }   
+      }
     </style>
       <va-app-header title="Dogs" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">  
       <div class="dog-banner">
         <div class="input-group">
-          <sl-input id="search" class="search-dog" size="large" type="search" placeholder="Search Dogs"><sl-icon @click=${this.filterDogs.bind(this)} name="search" slot="suffix"></sl-icon></sl-input>
+          <sl-input id="search" class="search-dog" size="large" type="search" @keydown="${this.filterDogs.bind(this)}" placeholder="Search Dogs"><sl-icon @click=${this.filterDogs.bind(this)} name="search" slot="suffix"></sl-icon></sl-input>
         </div>
       </div>
     <div class="filter-menu">

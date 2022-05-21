@@ -16,33 +16,32 @@ class MessagesView {
     this.dogsList = null
     this.userList = null
     this.dogMessages = null
-    this.currentUser = null
-    this.render()    
+    this.currentUser = null  
+    this.render()   
     Utils.pageIntroAnim()
     await this.getMyMessages()
+    this.render()   
   }
 
   async getMyMessages() {
     try{
       this.currentUser = await UserAPI.getUser(Auth.currentUser._id)
       this.myMessages = await MessageAPI.getMessages()
+      this.dogsList = await DogAPI.getDogs()
       this.userList = await UserAPI.getUsers()
-      console.log(this.currentUser.accessLevel)
+      console.log(this.dogsList)
       // for buyer
       if(this.currentUser.accessLevel == 1) {
         this.myMessages = this.myMessages.filter(message => message.buyerId == this.currentUser._id)
         this.myMessages = this.removeDuplicates(this.myMessages, 'dogId')
-        this.dogsList = await DogAPI.getDogs()
+        console.log(this.myMessages)
       }
       // for seller
       else{
-        this.dogsList = await DogAPI.getDogs()
         this.dogsList = this.dogsList.filter(dog => dog.owner == this.currentUser._id)
         this.dogMessages = this.getMessages()
-        this.dogMessages = this.removeDuplicates(this.dogMessages, 'buyerId') 
+        this.dogMessages = this.removeDuplicates(this.dogMessages, 'dogId') 
       }
-
-      this.render()
     }catch(err){
       Toast.show(err, 'error')
     }
@@ -100,7 +99,7 @@ class MessagesView {
       ${this.myMessages.map(messages => 
         html`
         <va-message-content class="message-info" 
-            dogId="${this.getDog(messages.dogId)._id}"
+            dogId="${messages.dogId}"
             dogName="${this.getDog(messages.dogId).name}"
             dogImage="${this.getDog(messages.dogId).image}"
             message="${messages.message}"

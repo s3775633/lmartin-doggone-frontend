@@ -124,6 +124,14 @@ class newDogView {
           float: right;
           width: 200px;
         }
+        @media only screen and (max-width: 1100px) {
+          .left-panel {
+            width: 50%;
+          }
+          .right-panel {
+            width: 50%;
+          }
+        }
         @media only screen and (max-width: 800px) {
           .left-panel {
             width: 100%;
