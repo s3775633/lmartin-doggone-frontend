@@ -15310,7 +15310,7 @@ class App {
   constructor() {
     this.name = "Dogs";
     this.version = "1.0.0";
-    this.apiBase = 'http://localhost:3000';
+    this.apiBase = 'https://lmartin-dogs-backend.herokuapp.com/';
     this.rootEl = document.getElementById("root");
     this.version = "1.0.0";
   }
@@ -17644,7 +17644,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64875" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56676" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
