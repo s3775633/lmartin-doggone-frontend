@@ -164,7 +164,8 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
       <nav class="app-top-nav">
         <a href="/" @click="${anchorRoute}">Home</a> 
         ${(this.user.accessLevel == 2) ? html`
-          <a href="/newDog" @click="${anchorRoute}">Add Dog</a>   
+          <a href="/newDog" @click="${anchorRoute}">Add Dog</a>  
+          <a href="/myDogs" @click="${anchorRoute}">My Dogs</a>  
         ` : ''}  
         ${(this.user.accessLevel == 1) ? html`
           <a href="/dogs" @click="${anchorRoute}">Listings</a> 

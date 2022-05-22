@@ -113,6 +113,15 @@ class EditDogView {
           float: right;
           width: 200px;
         }
+        .dog-delete {
+          width: 200px;
+          background-color: #a10015;
+          border: none;
+          border-radius: 4px;
+          color: #ffffff;
+          height: 40px;
+          font-weight: bold;
+        }
         @media only screen and (max-width: 1100px) {
           .left-panel {
             width: 50%;

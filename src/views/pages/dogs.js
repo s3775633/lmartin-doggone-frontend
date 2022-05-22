@@ -169,6 +169,22 @@ class DogsView {
         <sl-menu-item data-field="breed" data-match="border collie" value="border collie">border collie</sl-menu-item>
         <sl-menu-item data-field="breed" data-match="Dashhound" value="Dashhound">dashhound</sl-menu-item>
         <sl-menu-item data-field="breed" data-match="great dane" value="great dane">great dane</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="golden retriever" value="golden retriever">golden retriever</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="french bulldog" value="french bulldog">french bulldog</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="poodle" value="poodle">poodle</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="german shepherd" value="german shepherd">german shepherd</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="beagle" value="beagle">beagle</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="rottweiler" value="rottweiler">rottweiler</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="Australian shepherd" value="Australian shepherd">Australian shepherd</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="yorkshire terrier" value="yorkshire terrier">yorkshire terrier</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="boxer" value="boxer">boxer</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="jack russell terrier" value="jack russell terrier">jack russell terrier</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="pug" value="pug">pug</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="mastiff" value="mastiff">mastiff</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="maltese" value="maltese">maltese</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="dalmatian" value="dalmatian">dalmatian</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="pomeranian" value="pomeranian">pomeranian</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="husky" value="husky">husky</sl-menu-item>
       </sl-select>
         <sl-select class="dog-select" id="sex" placeholder="Sex" clearable>
         <sl-menu-item data-field="sex" data-match="male" value="male">male</sl-menu-item>
@@ -190,6 +206,9 @@ class DogsView {
         <sl-menu-item data-field="nature" data-match="loving" value="loving">loving</sl-menu-item>
         <sl-menu-item data-field="nature" data-match="playful" value="playful">playful</sl-menu-item>
         <sl-menu-item data-field="nature" data-match="protective" value="protective">protective</sl-menu-item>
+        <sl-menu-item data-field="nature" data-match="timid" value="timid">timid</sl-menu-item>
+        <sl-menu-item data-field="nature" data-match="working" value="working">working</sl-menu-item>
+        <sl-menu-item data-field="nature" data-match="guarding" value="guarding">guarding</sl-menu-item>
       </sl-select>
       <sl-select class="dog-select" id="energy" placeholder="Energy" clearable>
         <sl-menu-item data-field="energy" data-match="low" value="low">low</sl-menu-item>

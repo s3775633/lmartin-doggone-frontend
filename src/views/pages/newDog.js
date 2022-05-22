@@ -165,8 +165,24 @@ class newDogView {
             <div class="input-group new-dog-input">              
               <sl-select name="breed" placeholder="Breed" required>
                 <sl-menu-item value="border collie">border collie</sl-menu-item>
-                <sl-menu-item value="Dashhound">dashhound</sl-menu-item>
+                <sl-menu-item value="dachshund">dachshund</sl-menu-item>
                 <sl-menu-item value="great dane">great dane</sl-menu-item>
+                <sl-menu-item value="golden retriever">golden retriever</sl-menu-item>
+                <sl-menu-item value="french bulldog">french bulldog</sl-menu-item>
+                <sl-menu-item value="poodle">poodle</sl-menu-item>
+                <sl-menu-item value="german shepherd">german shepherd</sl-menu-item>
+                <sl-menu-item value="beagle">beagle</sl-menu-item>
+                <sl-menu-item value="rottweiler">rottweiler</sl-menu-item>
+                <sl-menu-item value="Australian shepherd">Australian shepherd</sl-menu-item>
+                <sl-menu-item value="yorkshire terrier">yorkshire terrier</sl-menu-item>
+                <sl-menu-item value="boxer">boxer</sl-menu-item>
+                <sl-menu-item value="jack russell terrier">jack russell terrier</sl-menu-item>
+                <sl-menu-item value="pug">pug</sl-menu-item>
+                <sl-menu-item value="mastiff">mastiff</sl-menu-item>
+                <sl-menu-item value="maltese">maltese</sl-menu-item>
+                <sl-menu-item value="dalmatian">dalmatian</sl-menu-item>
+                <sl-menu-item value="pomeranian">pomeranian</sl-menu-item>
+                <sl-menu-item value="husky">husky</sl-menu-item>
               </sl-select>
             </div>
             <div class="input-group new-dog-input">
@@ -177,6 +193,9 @@ class newDogView {
                 <sl-menu-item value="loving">loving</sl-menu-item>
                 <sl-menu-item value="playful">playful</sl-menu-item>
                 <sl-menu-item value="protective">protective</sl-menu-item>
+                <sl-menu-item value="timid">timid</sl-menu-item>
+                <sl-menu-item value="working">working</sl-menu-item>
+                <sl-menu-item value="guarding">guarding</sl-menu-item>
               </sl-select>
             </div>
             <div class="input-group new-dog-input">
