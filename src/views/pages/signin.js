@@ -103,7 +103,7 @@ class SignInView {
         text-align: center;
       }
       .signinup-logo {
-        margin-bottom: 60px;
+        margin-bottom: 20px;
       }
       @media only screen and (max-width: 1100px) {
         .right-panel {
@@ -123,7 +123,7 @@ class SignInView {
         <div class="login-container">
           <div class="left-panel">
             <div class="signinup-box"> 
-            <img class="signinup-logo" src="/images/logo.svg">  
+            <img class="signinup-logo" src="/images/logo-white-no-text.png">  
               <h1>Login</h1>       
               <sl-form class="form-signup dark-theme" @sl-submit=${this.signInSubmitHandler}>          
                 <div class="input-group">

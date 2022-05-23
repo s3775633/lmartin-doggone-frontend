@@ -86,7 +86,7 @@ class SignUpView{
       <div class="login-container">
       <div class="left-panel">   
         <div class="signinup-box">
-        <img class="signinup-logo" src="/images/logo.svg">
+        <img class="signinup-logo" src="/images/logo-white-no-text.png">
           <h1>Sign Up</h1>
           <sl-form class="form-signup" @sl-submit=${this.signUpSubmitHandler}>
             <div class="input-group">

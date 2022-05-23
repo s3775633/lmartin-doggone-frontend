@@ -122,7 +122,7 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
       }
 
       .app-side-menu-logo {
-        width: 120px;
+        width: 150px;
         margin-bottom: 1em;
         position: absolute;
         top: 2em;
@@ -186,7 +186,7 @@ customElements.define('va-app-header', class AppHeader extends LitElement {
     </header>
 
     <sl-drawer class="app-side-menu" placement="left">
-      <img class="app-side-menu-logo" src="/images/logo.svg">
+      <img class="app-side-menu-logo" src="/images/logo-side-text.png">
       <nav class="app-side-menu-items">
         <a href="/" @click="${this.menuClick}">Home</a>
         ${(this.user.accessLevel == 2) ? html`

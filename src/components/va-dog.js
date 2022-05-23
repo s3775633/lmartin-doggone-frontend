@@ -104,6 +104,10 @@ customElements.define('va-dog', class Dog extends LitElement {
             text-transform: uppercase;
             font-weight: bold;
         }
+        .dog-modal-text {
+          font-weight: bold;
+          font-size: 20px;
+        }
         @media only screen and (max-width: 1100px) {
           .image {
             margin-top: 30px;
@@ -128,10 +132,10 @@ customElements.define('va-dog', class Dog extends LitElement {
         </div>
         <div class="content">
             <h1>${this.name}</h1>
-            <p>Breed: <span>${this.breed}</span></p>
-            <p class="size">Size: <span>${this.size}</span></p>
-            <p class="age">Age: <span>${this.age}</span></p>
-            <p class="nature">Nature: <span>${this.nature}</span></p>
+            <p class="dog-modal-text">Breed: <span>${this.breed}</span></p>
+            <p class="dog-modal-text size">Size: <span>${this.size}</span></p>
+            <p class="dog-modal-text age">Age: <span>${this.age}</span></p>
+            <p class="dog-modal-text nature">Nature: <span>${this.nature}</span></p>
             <sl-form class="form-signup" @sl-submit=${this.newMessageSubmitHandler}>
               <sl-input hidden name="buyerId" value=${Auth.currentUser._id}></sl-input>
               <sl-input hidden name="dogId" value=${this.id}></sl-input>
