@@ -17,19 +17,19 @@ class DogsView {
     this.randTileColour()
   }
 
+  // function used to filter dogs if search criteria changes.
   async filterDogs()
   {
     // get fresh copy of dogs
     this.dogs = await DogAPI.getDogs()
     
+  
     const breed = document.getElementById('breed').value
     const sex = document.getElementById('sex').value
     const size = document.getElementById('size').value
     const age = document.getElementById('age').value
     const nature = document.getElementById('nature').value
     const energy = document.getElementById('energy').value
-
-    console.log("hello")
 
     let filteredDogs = this.dogs
    
@@ -87,11 +87,13 @@ class DogsView {
     filterSelects.forEach(select => select.value = '')
   }
 
+  // clear filters and set all dogs again
   clearFilters(){
     this.getDogs()
     this.clearFilterButtons()
   }
 
+  // function to get dogs
   async getDogs() {
     try{
       this.dogs = await DogAPI.getDogs()
@@ -106,11 +108,14 @@ class DogsView {
     }
   }
 
+  // sets random tile colour base on site colour scheme
   randTileColour()
   {
     const tiles = document.querySelectorAll('va-dog')
+    // array of site colourschemes
     const colours = ['#3F7294', '#5C753A', '#96785C', '#BE825B', '#493721', '#EDC895']
     console.log(tiles)
+    // iteration of tiles to set colour
     for(let x = 0; x < tiles.length; x++)
     {
       tiles[x].style.backgroundColor = colours[Math.floor(Math.random() * 6)];

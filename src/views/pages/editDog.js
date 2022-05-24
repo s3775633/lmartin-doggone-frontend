@@ -16,6 +16,7 @@ class EditDogView {
     this.getDog()     
   }
 
+  // get dog
   async getDog(){
     try {
       this.dog = await DogAPI.getDog(DogAPI.currentDog) 
@@ -29,6 +30,7 @@ class EditDogView {
     }
   }
 
+  // function used to change preview image
   changeImage() {
     var reader;
     const input = document.getElementById("file-upload")
@@ -46,6 +48,7 @@ class EditDogView {
       }
     }
 
+  // function used to update dog details via form data.
   async editDogSubmitHandler(e){
     e.preventDefault()
     const formData = e.detail.formData

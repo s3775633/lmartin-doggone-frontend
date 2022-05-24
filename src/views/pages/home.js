@@ -26,6 +26,7 @@ class HomeView {
     }
   }
 
+  // function used to search dog via the search bar on the home page
   async searchDog() {
     await this.getDogs()
     let filteredDogs = this.dogs
