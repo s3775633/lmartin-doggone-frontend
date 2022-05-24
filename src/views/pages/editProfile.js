@@ -157,12 +157,13 @@ class EditProfileView {
     }
     </style>
       <va-app-header title="Edit Profile" user=${JSON.stringify(Auth.currentUser)}></va-app-header>
-      <div class="page-content">  
+      <div class="page-content"> 
+      ${(this.user == null) ? html`
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>  
+      `:html` 
       <div class="vertical-line"></div> 
       <sl-form @sl-submit=${this.updateProfileSubmitHandler.bind(this)}>      
-        ${(this.user == null) ? html`
-          <sl-spinner></sl-spinner>
-        `:html`
         <div class="profile-container">   
           <div class="profile-left" calign> 
           ${Auth.currentUser && Auth.currentUser.avatar ? html`

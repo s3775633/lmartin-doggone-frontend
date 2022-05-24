@@ -8,6 +8,8 @@ import MessageAPI from '../../MessageAPI'
 import DogAPI from '../../DogAPI'
 import Toast from '../../Toast'
 import message from './message'
+import splash from './../../views/partials/splash'
+
 
 class MessagesView {
   async init(){
@@ -93,7 +95,8 @@ class MessagesView {
       <va-app-header title="Messages" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">   
       ${(this.myMessages == null) ? html`
-      <sl-spinner></sl-spinner>   
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3> 
     `:html` 
     ${(this.currentUser.accessLevel == 1) ? html`
       ${this.myMessages.map(messages => 

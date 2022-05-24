@@ -97,7 +97,8 @@ class MessageView {
       <va-app-header title="Message" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">   
       ${(this.myMessages == null) ? html`
-      <sl-spinner></sl-spinner>   
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>  
     `:html` 
     <va-message-content class="message-info" 
     dogId="${this.dog._id}"
@@ -134,7 +135,6 @@ class MessageView {
         </div>
         `)
         }
-      `}
       <sl-form class="form-signup" @sl-submit=${this.newMessageSubmitHandler.bind(this)}>
         <sl-input hidden name="buyerId" value=${this.buyerId}></sl-input>
         <sl-input hidden name="dogId" value=${this.dogId}></sl-input>
@@ -143,7 +143,8 @@ class MessageView {
         <p></p>
         <sl-button type="primary" class="submit-btn dog-submit" submit>Send Message</sl-button>
       </sl-form>
-      </div>      
+      </div> 
+      `}     
     `
     render(template, App.rootEl)
   }

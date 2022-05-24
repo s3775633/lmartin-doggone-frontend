@@ -43,11 +43,12 @@ class myDogsView {
   render(){
     const template = html`
       <va-app-header title="My Dogs" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
-      <div class="page-content">        
+      <div class="page-content">  
+      ${this.myDogs == null ? html`
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3> 
+      ` : html`      
         <div class="dogs-grid">
-        ${this.myDogs == null ? html`
-          <sl-spinner></sl-spinner>
-        ` : html`
           ${this.myDogs.map(dog => html`
             <va-my-dog class="dog-card" 
               id="${dog._id}"

@@ -143,7 +143,8 @@ class EditDogView {
       <va-app-header title="Edit Dog" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
       <div class="page-content">  
       ${(this.dog == null) ? html`
-        <sl-spinner></sl-spinner>   
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>   
       `:html` 
         <sl-form class="form-signup" @sl-submit=${this.editDogSubmitHandler}>
         <input type="hidden" name="owner" value="${Auth.currentUser._id}" />

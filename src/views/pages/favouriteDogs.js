@@ -46,7 +46,8 @@ class FavouriteDogsView {
       <div class="page-content"> 
       <div class="dogs-grid">
         ${this.favDogs == null ? html`
-          <sl-spinner></sl-spinner>
+        <div class="dog"></div>
+        <h3 class="loading-message">Loading...</h3>  
         ` : html`
           ${this.favDogs.map(dog => html`
             <va-dog class="dog-card"

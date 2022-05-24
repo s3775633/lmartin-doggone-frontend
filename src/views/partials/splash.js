@@ -4,8 +4,8 @@ const splash = html`
 
   <div class="app-splash">
     <div class="inner">
-      <img class="app-logo" src="/images/Logo-text.png" />
-      <sl-spinner style="font-size: 2em;"></sl-spinner>
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>
     </div>
   </div>
 `

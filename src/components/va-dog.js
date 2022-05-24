@@ -108,6 +108,9 @@ customElements.define('va-dog', class Dog extends LitElement {
           font-weight: bold;
           font-size: 20px;
         }
+        .message-box {
+          animation: pulse 2s infinite !important;
+        }
         @media only screen and (max-width: 1100px) {
           .image {
             margin-top: 30px;
@@ -122,8 +125,6 @@ customElements.define('va-dog', class Dog extends LitElement {
           .image img {
             height: none;
           }
-        }
-        @media only screen and (max-width: 600px) {
         }
         </style>
         <div class="wrap">
@@ -140,7 +141,7 @@ customElements.define('va-dog', class Dog extends LitElement {
               <sl-input hidden name="buyerId" value=${Auth.currentUser._id}></sl-input>
               <sl-input hidden name="dogId" value=${this.id}></sl-input>
               <sl-input hidden name="buyer" value=${true}></sl-input>
-              <sl-textarea rows="6" name="message" placeholder="New Message"></sl-textarea>
+              <sl-textarea class="message-box" rows="6" name="message" placeholder="New Message"></sl-textarea>
               <p></p>
               <sl-button @click=${this.addFavHandler.bind(this)}>
               <sl-icon slot="prefix" name="heart-fill"></sl-icon>
@@ -215,6 +216,7 @@ customElements.define('va-dog', class Dog extends LitElement {
           --sl-color-white: none;
           width: 100%;
           color: #ffffff;
+          cursor: pointer;
         }
         .info-button {
           height: 40px;

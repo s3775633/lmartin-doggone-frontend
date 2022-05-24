@@ -13,10 +13,6 @@ class DogsView {
     this.dogs = null  
     this.render()    
     Utils.pageIntroAnim()
-    const filterSelects = document.querySelectorAll("sl-select")
-    filterSelects.forEach(select => select.addEventListener('sl-change', event => {
-      this.filterDogs();
-    }));
     await this.getDogs()
     this.randTileColour()
   }
@@ -32,6 +28,8 @@ class DogsView {
     const age = document.getElementById('age').value
     const nature = document.getElementById('nature').value
     const energy = document.getElementById('energy').value
+
+    console.log("hello")
 
     let filteredDogs = this.dogs
    
@@ -99,6 +97,10 @@ class DogsView {
       this.dogs = await DogAPI.getDogs()
       console.log(this.dogs)
       this.render()
+      const filterSelects = document.querySelectorAll("sl-select")
+      filterSelects.forEach(select => select.addEventListener('sl-change', event => {
+        this.filterDogs();
+      }));
     }catch(err){
       Toast.show(err, 'error')
     }
@@ -158,7 +160,11 @@ class DogsView {
       }
     </style>
       <va-app-header title="Dogs" user="${JSON.stringify(Auth.currentUser)}"></va-app-header>
-      <div class="page-content">  
+      <div class="page-content"> 
+      ${this.dogs == null ? html`
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>  
+      ` : html` 
       <div class="dog-banner">
         <div class="input-group">
           <sl-input id="search" class="search-dog" size="large" type="search" @keydown="${this.filterDogs.bind(this)}" placeholder="Search Dogs"><sl-icon @click=${this.filterDogs.bind(this)} name="search" slot="suffix"></sl-icon></sl-input>
@@ -167,7 +173,7 @@ class DogsView {
     <div class="filter-menu">
       <sl-select class="dog-select" id="breed" placeholder="Breed" clearable>
         <sl-menu-item data-field="breed" data-match="border collie" value="border collie">border collie</sl-menu-item>
-        <sl-menu-item data-field="breed" data-match="Dashhound" value="Dashhound">dashhound</sl-menu-item>
+        <sl-menu-item data-field="breed" data-match="dachshund" value="dachshund">dachshund</sl-menu-item>
         <sl-menu-item data-field="breed" data-match="great dane" value="great dane">great dane</sl-menu-item>
         <sl-menu-item data-field="breed" data-match="golden retriever" value="golden retriever">golden retriever</sl-menu-item>
         <sl-menu-item data-field="breed" data-match="french bulldog" value="french bulldog">french bulldog</sl-menu-item>
@@ -218,9 +224,6 @@ class DogsView {
       <sl-button class="reset-button" size="medium" @click=${this.clearFilters.bind(this)}>Clear Filters</sl-button>
     </div>
     <div class="dogs-grid">
-    ${this.dogs == null ? html`
-      <sl-spinner></sl-spinner>
-    ` : html`
       ${this.dogs.map(dog => html`
         <va-dog class="dog-card" 
           id="${dog._id}"

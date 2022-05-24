@@ -96,15 +96,16 @@ class HomeView {
     </style>
       <va-app-header title="Home" user=${JSON.stringify(Auth.currentUser)}></va-app-header>
       <div class="page-content">
+      ${this.dogs == null ? html`
+      <div class="dog"></div>
+      <h3 class="loading-message">Loading...</h3>  
+      ` : html`
         <div class="home-banner">
           <div class="input-group">
             <sl-input class="home-search" id="search" size="large" type="search" placeholder="Search Dogs" pill><sl-icon @click=${this.searchDog.bind(this)} name="search" slot="suffix"></sl-icon></sl-input>
           </div>
         </div>
         <div class="dogs-grid">
-        ${this.dogs == null ? html`
-          <sl-spinner></sl-spinner>
-        ` : html`
           ${this.dogs.map(dog => html`
             <va-dog class="dog-card" 
               id="${dog._id}"
